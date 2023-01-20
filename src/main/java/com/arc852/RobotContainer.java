@@ -51,7 +51,7 @@ public class RobotContainer {
                 xboxController.streamRightJoystick(),
                 (left, right) -> new double[] {left[0], left[1], right[0]})
             .filter((x) -> Robot.getInstance().isTeleop())
-            .map(x -> Tuples.of(new Translation2d(-x[1], x[0]), x[2])));
+            .map(x -> Tuples.of(new Translation2d(-x[1], x[0]), x[2]))); // weird ordering because to correct for xbox controller
   }
 
   public void setAlliance(DriverStation.Alliance alliance) {
