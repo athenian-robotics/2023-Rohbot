@@ -36,7 +36,6 @@ public class Swerve extends SubsystemBase {
   // you might be able to actually use this to map a Flux<Tuple2<Translation2d>>, Double>> to a
   // Flux<Tuple4<Mono<SwerveModuleState>>> and then call .subscribe()
   public void drive(Tuple2<Translation2d, Double> input) {
-    ;
     var robotPose = estimator.getPose().blockFirst();
     if (robotPose == null) logger.error("robot pose is somehow null, pose estimator is broken");
     var robotRotation = robotPose == null ? new Rotation2d() : robotPose.getRotation();
