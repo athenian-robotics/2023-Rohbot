@@ -39,7 +39,8 @@ public class SwerveModuleInput {
             .zipWith(
                 angleEncoder.getPosition(),
                 (speed, angle) ->
-                    new SwerveModuleState(speed, new Rotation2d(Math.toRadians(angle / 4096 * 360 + angleOffset))));
+                    new SwerveModuleState(
+                        speed, new Rotation2d(Math.toRadians(angle / 4096 * 360 + angleOffset))));
   }
 
   public Flux<SwerveModulePosition> getSwerveModulePosition() {
@@ -47,7 +48,10 @@ public class SwerveModuleInput {
         .getSelectedSensorPositionFlux()
         .zipWith(
             angleEncoder.getPosition(),
-            (pos, ang) -> new SwerveModulePosition(pos * DRIVE_ENCODER_TO_METERS, new Rotation2d(Math.toRadians(ang / 4096 * 360 + angleOffset))));
+            (pos, ang) ->
+                new SwerveModulePosition(
+                    pos * DRIVE_ENCODER_TO_METERS,
+                    new Rotation2d(Math.toRadians(ang / 4096 * 360 + angleOffset))));
   }
 
   public void resetToAbsoslute() {

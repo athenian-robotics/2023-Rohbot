@@ -6,10 +6,11 @@ package com.arc852;
 
 import edu.wpi.first.wpilibj.RobotBase;
 
+// dont touch it
 public final class Main {
   private Main() {}
 
   public static void main(String... args) {
-    RobotBase.startRobot(Robot::new);
+    RobotBase.startRobot(Robot::getInstance);
   }
 }
