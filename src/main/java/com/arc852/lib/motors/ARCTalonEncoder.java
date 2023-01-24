@@ -21,6 +21,7 @@ public class ARCTalonEncoder extends ARCTalon {
     Robot.getInstance()
         .addPeriodic(
             () -> {
+              System.out.println("based");
               positionSink.tryEmitNext(getSelectedSensorPosition());
               velocitySink.tryEmitNext(getSelectedSensorVelocity());
             });

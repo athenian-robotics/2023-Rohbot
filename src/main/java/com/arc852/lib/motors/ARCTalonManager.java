@@ -20,7 +20,7 @@ public class ARCTalonManager {
 
   public static ARCTalonEncoder createTalonEncoder(int id) {
     if ((motors.containsKey(id) && !motors.get(id).getState().equals(TalonState.ENCODER))
-        || motors.get(id).getState().equals(TalonState.SHARED)) {
+        || (motors.containsKey(id) && motors.get(id).getState().equals(TalonState.SHARED))) {
       throw new IllegalArgumentException("Encoder already exists");
     } // perhaps we should allow multiple encoders to be created
     // the idea is that with motors conflicting set() calls could be an issue, but with encoders

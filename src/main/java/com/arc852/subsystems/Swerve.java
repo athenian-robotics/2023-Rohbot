@@ -51,8 +51,7 @@ public class Swerve extends SubsystemBase {
         Mono.just(swerveModuleStates[0]), estimator.getFrontLeftState().last());
     frontRight.setDesiredState(
         Mono.just(swerveModuleStates[1]), estimator.getFrontRightState().last());
-    backLeft.setDesiredState(
-            Mono.just(swerveModuleStates[2]), estimator.getBackLeftState().last());
+    backLeft.setDesiredState(Mono.just(swerveModuleStates[2]), estimator.getBackLeftState().last());
     backRight.setDesiredState(
         Mono.just(swerveModuleStates[3]), estimator.getBackRightState().last());
   }
