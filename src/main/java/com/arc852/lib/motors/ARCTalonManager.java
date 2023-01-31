@@ -7,7 +7,7 @@ public class ARCTalonManager {
 
   public static ARCTalonMotor createTalonMotor(int id) {
     if ((motors.containsKey(id) && motors.get(id).getState().equals(TalonState.MOTOR))
-        || motors.get(id).getState().equals(TalonState.SHARED)) {
+        || (motors.containsKey(id) && motors.get(id).getState().equals(TalonState.SHARED))) {
       throw new IllegalArgumentException("Motor already exists");
     }
     if (motors.containsKey(id) && motors.get(id).getState().equals(TalonState.ENCODER)) {
