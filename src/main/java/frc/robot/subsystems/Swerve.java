@@ -1,19 +1,18 @@
 package frc.robot.subsystems;
 
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.controller.LTVDifferentialDriveController;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.kinematics.*;
 import edu.wpi.first.math.system.plant.LinearSystemId;
-import edu.wpi.first.networktables.NetworkTableEntry;
+import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
-import edu.wpi.first.wpilibj.motorcontrol.MotorController;
 import edu.wpi.first.wpilibj.motorcontrol.MotorControllerGroup;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.RepeatCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import frc.robot.SwerveModule;
 import frc.robot.Constants;
@@ -27,8 +26,7 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
-import java.sql.SQLOutput;
-import java.util.function.BooleanSupplier;
+import java.util.Map;
 
 import static com.ctre.phoenix.motorcontrol.NeutralMode.Brake;
 
@@ -40,9 +38,12 @@ public class Swerve extends SubsystemBase {
     private MotorControllerGroup right;
     private final DifferentialDrive drive;
     private PIDController pid;
-    private final double kP = 0.03;
+    private final double kP = 0.018;
     private final double kI = 0;
-    private final double kD = 0;
+    private final double kD = 0.001;
+    private GenericEntry pitchEntry;
+    private GenericEntry pEffect;
+    private GenericEntry dEffect;
 
 
     private final LTVDifferentialDriveController controller;
@@ -70,8 +71,22 @@ public class Swerve extends SubsystemBase {
         drive = new DifferentialDrive(left, right);
         this.pid = new PIDController(kP, kI, kD);
         ShuffleboardTab tab = Shuffleboard.getTab("Swerve");
-        tab.add("PID", pid)
-                .withWidget(BuiltInWidgets.kPIDCommand);
+        tab.add("PID", pid);
+
+        pitchEntry = tab.add("Pitch", gyro.getPitch())
+                .withWidget(BuiltInWidgets.kGraph)
+                .withProperties(Map.of("min", -180, "max", 180))
+                .getEntry();
+
+        pEffect = tab.add("P Effect", 0)
+                .withWidget(BuiltInWidgets.kGraph)
+                .withProperties(Map.of("min", -180, "max", 180))
+                .getEntry();
+
+        dEffect = tab.add("D Effect", 0)
+                .withWidget(BuiltInWidgets.kGraph)
+                .withProperties(Map.of("min", -180, "max", 180))
+                .getEntry();
 
         controller = new LTVDifferentialDriveController(
                 LinearSystemId.identifyDrivetrainSystem(
@@ -102,7 +117,7 @@ public class Swerve extends SubsystemBase {
                 fieldRelative ? ChassisSpeeds.fromFieldRelativeSpeeds(
                                     translation.getX(),
                                     translation.getY(),
-                                    rotation, 
+                                    rotation,
                                     getYaw()
                                 )
                                 : new ChassisSpeeds(
@@ -115,16 +130,16 @@ public class Swerve extends SubsystemBase {
         for(SwerveModule mod : mSwerveMods){
             mod.setDesiredState(swerveModuleStates[mod.moduleNumber], isOpenLoop);
         }
-    }    
+    }
 
     /* Used by SwerveControllerCommand in Auto */
     public void setModuleStates(SwerveModuleState[] desiredStates) {
         SwerveDriveKinematics.desaturateWheelSpeeds(desiredStates, Constants.Swerve.maxSpeed);
-        
+
         for(SwerveModule mod : mSwerveMods){
             mod.setDesiredState(desiredStates[mod.moduleNumber], false);
         }
-    }    
+    }
 
     public Pose2d getPose() {
         return swerveOdometry.getPoseMeters();
@@ -171,9 +186,14 @@ public class Swerve extends SubsystemBase {
         return new RunCommand(
                 () -> {
                     double power = pid.calculate(gyro.getPitch());
-                    drive.tankDrive(-power, -power);
+                    double translationVal = MathUtil.applyDeadband(-power, Constants.stickDeadband);
+                    drive(new Translation2d(translationVal, 0).times(Constants.Swerve.maxSpeed),0,false, true);
                 }
         );
+    }
+
+    public void tankDrive(double leftPower, double rightPower){
+        drive.tankDrive(leftPower, rightPower);
     }
 
 //    public Command getAutoBalancing() {
@@ -206,6 +226,9 @@ public class Swerve extends SubsystemBase {
         drive.feed();
 
         SmartDashboard.putNumber("Pitch", gyro.getPitch());
+        pitchEntry.setDouble(gyro.getPitch());
+        pEffect.setDouble(kP * pid.getPositionError());
+        dEffect.setDouble(kD * pid.getVelocityError());
 
         for(SwerveModule mod : mSwerveMods){
             SmartDashboard.putNumber("Mod " + mod.moduleNumber + " Cancoder", mod.getCanCoder().getDegrees());

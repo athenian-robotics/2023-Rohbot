@@ -1,5 +1,6 @@
 package frc.robot.commands;
 
+import edu.wpi.first.math.filter.SlewRateLimiter;
 import frc.robot.Constants;
 import frc.robot.subsystems.Swerve;
 
@@ -17,6 +18,8 @@ public class TeleopSwerve extends CommandBase {
     private DoubleSupplier strafeSup;
     private DoubleSupplier rotationSup;
     private BooleanSupplier robotCentricSup;
+    private SlewRateLimiter translationLimiter = new SlewRateLimiter(2);
+    private SlewRateLimiter strafeLimiter = new SlewRateLimiter(2);
 
     public TeleopSwerve(Swerve s_Swerve, DoubleSupplier translationSup, DoubleSupplier strafeSup, DoubleSupplier rotationSup, BooleanSupplier robotCentricSup) {
         this.s_Swerve = s_Swerve;
@@ -31,8 +34,8 @@ public class TeleopSwerve extends CommandBase {
     @Override
     public void execute() {
         /* Get Values, Deadband*/
-        double translationVal = MathUtil.applyDeadband(translationSup.getAsDouble(), Constants.stickDeadband);
-        double strafeVal = MathUtil.applyDeadband(strafeSup.getAsDouble(), Constants.stickDeadband);
+        double translationVal = translationLimiter.calculate(MathUtil.applyDeadband(translationSup.getAsDouble(), Constants.stickDeadband));
+        double strafeVal = strafeLimiter.calculate(MathUtil.applyDeadband(strafeSup.getAsDouble(), Constants.stickDeadband));
         double rotationVal = MathUtil.applyDeadband(rotationSup.getAsDouble(), Constants.stickDeadband);
 
         /* Drive */
