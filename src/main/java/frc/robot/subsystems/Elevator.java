@@ -10,7 +10,6 @@ import frc.robot.Constants;
 import java.util.Set;
 
 public class Elevator extends SubsystemBase {
-    private final Encoder elevatorEncoder;
     private final MotorControllerGroup elevatorMotors;
 
     public Elevator() {
@@ -39,7 +38,7 @@ public class Elevator extends SubsystemBase {
     public Command moveDown(double speed) {
         return new StartEndCommand(
                 () -> {
-                    if (elevatorEncoder.get() > Constants.ElevatorConstants.MIN_HEIGHT) {
+                    if (elevatorMotors.get() > Constants.ElevatorConstants.MIN_HEIGHT) {
                         setMotorSpeed(-speed);
                     } else {
                         setMotorSpeed(0);
