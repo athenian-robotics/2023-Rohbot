@@ -13,9 +13,10 @@ public class Elevator extends SubsystemBase {
     private final Encoder elevatorEncoder;
     private final MotorControllerGroup elevatorMotors;
 
-    public Elevator(WPI_TalonFX leftElevatorMotor, WPI_TalonFX rightElevatorMotor, Encoder elevatorEncoder) {
+    public Elevator() {
+        WPI_TalonFX leftElevatorMotor = new WPI_TalonFX(Constants.ElevatorConstants.LEFT_MOTOR);
+        WPI_TalonFX rightElevatorMotor = new WPI_TalonFX(Constants.ElevatorConstants.RIGHT_MOTOR);
         this.elevatorMotors = new MotorControllerGroup(leftElevatorMotor, rightElevatorMotor);
-        this.elevatorEncoder = elevatorEncoder;
     }
 
     private void setMotorSpeed(double speed) {
@@ -25,7 +26,7 @@ public class Elevator extends SubsystemBase {
     public Command moveUp(double speed) {
         return new StartEndCommand(
                 () -> {
-                    if (elevatorEncoder.get() < Constants.ElevatorConstants.MAX_HEIGHT) {
+                    if (elevatorMotors.get() < Constants.ElevatorConstants.MAX_HEIGHT) {
                         setMotorSpeed(speed);
                     } else {
                         setMotorSpeed(0);

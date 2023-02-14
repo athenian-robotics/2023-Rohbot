@@ -139,6 +139,9 @@ public final class Constants {
     public static final class ElevatorConstants {
         public static final double MIN_HEIGHT = Integer.MIN_VALUE;
         public static final double MAX_HEIGHT = Integer.MAX_VALUE;
+        public static final int LEFT_MOTOR = 14;
+        public static final int RIGHT_MOTOR = 15;
+        public static final int ENCODER = 5;
     }
 
     public static final class AutoConstants { //TODO: The below constants are used in the example auto, and must be tuned to specific robot
