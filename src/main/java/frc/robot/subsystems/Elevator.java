@@ -24,11 +24,11 @@ public class Elevator extends SubsystemBase {
         elevatorMotors.set(speed);
     }
 
-    public Command moveUp(double speed) {
+    public Command moveUp() {
         return new StartEndCommand(
                 () -> {
                     if (leftElevatorMotor.getSelectedSensorPosition() < Constants.ElevatorConstants.MAX_HEIGHT) {
-                        setMotorSpeed(speed);
+                        setMotorSpeed(1.0);
                     } else {
                         setMotorSpeed(0);
                     }
@@ -37,7 +37,7 @@ public class Elevator extends SubsystemBase {
         );
     }
 
-    public Command moveDown(double speed) {
+    public Command moveDown() {
         return new StartEndCommand(
                 () -> {
                     if (leftElevatorMotor.getSelectedSensorPosition() > Constants.ElevatorConstants.MIN_HEIGHT) {
