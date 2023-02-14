@@ -41,7 +41,7 @@ public class Elevator extends SubsystemBase {
         return new StartEndCommand(
                 () -> {
                     if (leftElevatorMotor.getSelectedSensorPosition() > Constants.ElevatorConstants.MIN_HEIGHT) {
-                        setMotorSpeed(-speed);
+                        setMotorSpeed(-1.0);
                     } else {
                         setMotorSpeed(0);
                     }
@@ -49,5 +49,7 @@ public class Elevator extends SubsystemBase {
                 () -> setMotorSpeed(0)
         );
     }
+
+
 }
 
