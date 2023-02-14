@@ -40,7 +40,7 @@ public class Elevator extends SubsystemBase {
     public Command moveDown(double speed) {
         return new StartEndCommand(
                 () -> {
-                    if (elevatorMotors.get() > Constants.ElevatorConstants.MIN_HEIGHT) {
+                    if (leftElevatorMotor.getSelectedSensorPosition() > Constants.ElevatorConstants.MIN_HEIGHT) {
                         setMotorSpeed(-speed);
                     } else {
                         setMotorSpeed(0);
