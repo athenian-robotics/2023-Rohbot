@@ -27,7 +27,7 @@ public class Elevator extends SubsystemBase {
     public Command moveUp(double speed) {
         return new StartEndCommand(
                 () -> {
-                    if (elevatorMotors.get() < Constants.ElevatorConstants.MAX_HEIGHT) {
+                    if (leftElevatorMotor.getSelectedSensorPosition() < Constants.ElevatorConstants.MAX_HEIGHT) {
                         setMotorSpeed(speed);
                     } else {
                         setMotorSpeed(0);
