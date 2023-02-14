@@ -136,6 +136,11 @@ public final class Constants {
         }
     }
 
+    public static final class ElevatorConstants {
+        public static final double MIN_HEIGHT = Integer.MIN_VALUE;
+        public static final double MAX_HEIGHT = Integer.MAX_VALUE;
+    }
+
     public static final class AutoConstants { //TODO: The below constants are used in the example auto, and must be tuned to specific robot
         public static final double kMaxSpeedMetersPerSecond = 3;
         public static final double kMaxAccelerationMetersPerSecondSquared = 3;
