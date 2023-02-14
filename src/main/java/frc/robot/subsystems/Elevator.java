@@ -10,11 +10,13 @@ import frc.robot.Constants;
 import java.util.Set;
 
 public class Elevator extends SubsystemBase {
+    private final WPI_TalonFX leftElevatorMotor;
+    private final WPI_TalonFX rightElevatorMotor;
     private final MotorControllerGroup elevatorMotors;
 
     public Elevator() {
-        WPI_TalonFX leftElevatorMotor = new WPI_TalonFX(Constants.ElevatorConstants.LEFT_MOTOR);
-        WPI_TalonFX rightElevatorMotor = new WPI_TalonFX(Constants.ElevatorConstants.RIGHT_MOTOR);
+        leftElevatorMotor = new WPI_TalonFX(Constants.ElevatorConstants.LEFT_MOTOR);
+        rightElevatorMotor = new WPI_TalonFX(Constants.ElevatorConstants.RIGHT_MOTOR);
         this.elevatorMotors = new MotorControllerGroup(leftElevatorMotor, rightElevatorMotor);
     }
 
