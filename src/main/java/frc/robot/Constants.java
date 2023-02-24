@@ -96,7 +96,7 @@ public final class Constants {
 
         /* Module Specific Constants */
         /* Front Left Module - Module 0 */
-        public static final class Mod0 { //TODO: This must be tuned to specific robot
+        public static final class Mod0 { 
             public static final int driveMotorID = 5;
             public static final int angleMotorID = 6;
             public static final int canCoderID = 1;
@@ -106,7 +106,7 @@ public final class Constants {
         }
 
         /* Front Right Module - Module 1 */
-        public static final class Mod1 { //TODO: This must be tuned to specific robot
+        public static final class Mod1 { 
             public static final int driveMotorID = 7;
             public static final int angleMotorID = 8;
             public static final int canCoderID = 2;
@@ -116,7 +116,7 @@ public final class Constants {
         }
         
         /* Back Left Module - Module 2 */
-        public static final class Mod2 { //TODO: This must be tuned to specific robot
+        public static final class Mod2 { 
             public static final int driveMotorID = 9;
             public static final int angleMotorID = 10;
             public static final int canCoderID = 3;
@@ -126,7 +126,7 @@ public final class Constants {
         }
 
         /* Back Right Module - Module 3 */
-        public static final class Mod3 { //TODO: This must be tuned to specific robot
+        public static final class Mod3 { 
             public static final int driveMotorID = 11;
             public static final int angleMotorID = 12;
             public static final int canCoderID = 4;
@@ -136,9 +136,9 @@ public final class Constants {
         }
     }
 
-    public static final class ElevatorConstants {
-        public static final double MIN_HEIGHT = Integer.MIN_VALUE;
-        public static final double MAX_HEIGHT = Integer.MAX_VALUE;
+    public static final class ElevatorConstants { //TODO: MAX_HEIGHT must be tuned further
+        public static final double MIN_HEIGHT = -117.0;
+        public static final double MAX_HEIGHT = -70000.0;
         public static final int LEFT_MOTOR = 14;
         public static final int RIGHT_MOTOR = 15;
         public static final int ENCODER = 5;

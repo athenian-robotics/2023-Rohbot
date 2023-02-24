@@ -2,6 +2,8 @@ package frc.robot.subsystems;
 
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
+
+import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.motorcontrol.MotorControllerGroup;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
@@ -15,14 +17,16 @@ public class Elevator extends SubsystemBase {
     private final WPI_TalonFX leftMotor;
     private final WPI_TalonFX rightMotor;
     private final MotorControllerGroup elevatorMotors;
+    private final GenericEntry position;
+    private final GenericEntry velocity;
 
     public Elevator() {
         leftMotor = new WPI_TalonFX(Constants.ElevatorConstants.LEFT_MOTOR);
         rightMotor = new WPI_TalonFX(Constants.ElevatorConstants.RIGHT_MOTOR);
         this.elevatorMotors = new MotorControllerGroup(leftMotor, rightMotor);
         ShuffleboardTab tab = Shuffleboard.getTab("Elevator");
-        tab.add("Elevator Position", leftMotor.getSelectedSensorPosition());
-        tab.add("Elevator Speed", leftMotor.getSelectedSensorVelocity());
+        position = tab.add("Elevator Position", leftMotor.getSelectedSensorPosition()).getEntry();
+        velocity = tab.add("Elevator Speed", leftMotor.getSelectedSensorVelocity()).getEntry();
     }
 
     private void setMotorSpeed(double speed) {
@@ -54,8 +58,10 @@ public class Elevator extends SubsystemBase {
                 () -> setMotorSpeed(0)
         );
     }
+    @Override
     public void periodic(){
-
+        position.setDouble(leftMotor.getSelectedSensorPosition());
+        velocity.setDouble(leftMotor.getSelectedSensorVelocity());
     }
 }
 
