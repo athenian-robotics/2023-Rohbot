@@ -142,6 +142,9 @@ public final class Constants {
         public static final int LEFT_MOTOR = 14;
         public static final int RIGHT_MOTOR = 15;
         public static final int ENCODER = 5;
+        public static final double kV = 0.0;
+        public static final double kA = 0.0;
+        public static final double kS = 0.0;
     }
 
     public static final class ArmConstants { //TODO: Replace dummy values
