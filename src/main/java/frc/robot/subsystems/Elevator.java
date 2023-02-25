@@ -2,22 +2,31 @@ package frc.robot.subsystems;
 
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
+import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.motorcontrol.MotorControllerGroup;
 import edu.wpi.first.wpilibj2.command.*;
 import frc.robot.Constants;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 
 import java.util.Set;
 
 public class Elevator extends SubsystemBase {
-    private final WPI_TalonFX leftElevatorMotor;
-    private final WPI_TalonFX rightElevatorMotor;
+    private final WPI_TalonFX leftMotor;
+    private final WPI_TalonFX rightMotor;
     private final MotorControllerGroup elevatorMotors;
 
+    private final GenericEntry position;
+    private final GenericEntry speed;
+
     public Elevator() {
-        leftElevatorMotor = new WPI_TalonFX(Constants.ElevatorConstants.LEFT_MOTOR);
-        rightElevatorMotor = new WPI_TalonFX(Constants.ElevatorConstants.RIGHT_MOTOR);
-        this.elevatorMotors = new MotorControllerGroup(leftElevatorMotor, rightElevatorMotor);
+        leftMotor = new WPI_TalonFX(Constants.ElevatorConstants.LEFT_MOTOR);
+        rightMotor = new WPI_TalonFX(Constants.ElevatorConstants.RIGHT_MOTOR);
+        this.elevatorMotors = new MotorControllerGroup(leftMotor, rightMotor);
+        ShuffleboardTab tab = Shuffleboard.getTab("Elevator");
+        position = tab.add("Elevator Position", leftMotor.getSelectedSensorPosition()).getEntry();
+        speed = tab.add("Elevator Speed", leftMotor.getSelectedSensorVelocity()).getEntry();
     }
 
     private void setMotorSpeed(double speed) {
@@ -27,7 +36,7 @@ public class Elevator extends SubsystemBase {
     public Command moveUp() {
         return new StartEndCommand(
                 () -> {
-                    if (leftElevatorMotor.getSelectedSensorPosition() < Constants.ElevatorConstants.MAX_HEIGHT) {
+                    if (leftMotor.getSelectedSensorPosition() < Constants.ElevatorConstants.MAX_HEIGHT) {
                         setMotorSpeed(1.0);
                     } else {
                         setMotorSpeed(0);
@@ -40,7 +49,7 @@ public class Elevator extends SubsystemBase {
     public Command moveDown() {
         return new StartEndCommand(
                 () -> {
-                    if (leftElevatorMotor.getSelectedSensorPosition() > Constants.ElevatorConstants.MIN_HEIGHT) {
+                    if (leftMotor.getSelectedSensorPosition() > Constants.ElevatorConstants.MIN_HEIGHT) {
                         setMotorSpeed(-1.0);
                     } else {
                         setMotorSpeed(0);
@@ -50,6 +59,10 @@ public class Elevator extends SubsystemBase {
         );
     }
 
-
+    @Override
+    public void periodic(){
+        position.setDouble(leftMotor.getSelectedSensorPosition());
+        speed.setDouble(leftMotor.getSelectedSensorPosition());
+    }
 }
 
