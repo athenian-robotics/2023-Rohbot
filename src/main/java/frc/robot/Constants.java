@@ -137,8 +137,8 @@ public final class Constants {
     }
 
     public static final class ElevatorConstants { //TODO: MAX_HEIGHT must be tuned further
-        public static final double MIN_HEIGHT = -117.0;
-        public static final double MAX_HEIGHT = -70000.0;
+        public static final double MIN_HEIGHT = -110.0;
+        public static final double MAX_HEIGHT = -50000.0;
         public static final int LEFT_MOTOR = 14;
         public static final int RIGHT_MOTOR = 15;
         public static final int ENCODER = 5;

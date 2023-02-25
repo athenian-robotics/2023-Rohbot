@@ -1,5 +1,6 @@
 package frc.robot.subsystems;
 
+import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 
@@ -23,6 +24,8 @@ public class Elevator extends SubsystemBase {
     public Elevator() {
         leftMotor = new WPI_TalonFX(Constants.ElevatorConstants.LEFT_MOTOR);
         rightMotor = new WPI_TalonFX(Constants.ElevatorConstants.RIGHT_MOTOR);
+        leftMotor.setNeutralMode(NeutralMode.Brake);
+        rightMotor.setNeutralMode(NeutralMode.Brake);
         this.elevatorMotors = new MotorControllerGroup(leftMotor, rightMotor);
         ShuffleboardTab tab = Shuffleboard.getTab("Elevator");
         position = tab.add("Elevator Position", leftMotor.getSelectedSensorPosition()).getEntry();
@@ -36,10 +39,11 @@ public class Elevator extends SubsystemBase {
     public Command moveUp() {
         return new StartEndCommand(
                 () -> {
-                    if (leftMotor.getSelectedSensorPosition() < Constants.ElevatorConstants.MAX_HEIGHT) {
-                        setMotorSpeed(0.1);
+                    if (leftMotor.getSelectedSensorPosition() > Constants.ElevatorConstants.MAX_HEIGHT) {
+                        setMotorSpeed(-0.1);
                     } else {
                         setMotorSpeed(0);
+                        System.out.println("Stopped");
                     }
                 },
                 () -> setMotorSpeed(0)
@@ -49,10 +53,11 @@ public class Elevator extends SubsystemBase {
     public Command moveDown() {
         return new StartEndCommand(
                 () -> {
-                    if (leftMotor.getSelectedSensorPosition() > Constants.ElevatorConstants.MIN_HEIGHT) {
-                        setMotorSpeed(-0.1);
+                    if (leftMotor.getSelectedSensorPosition() < Constants.ElevatorConstants.MIN_HEIGHT) {
+                        setMotorSpeed(0.1);
                     } else {
                         setMotorSpeed(0);
+                        System.out.println("Stopped");
                     }
                 },
                 () -> setMotorSpeed(0)
