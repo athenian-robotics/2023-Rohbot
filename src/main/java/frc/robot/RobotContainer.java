@@ -67,8 +67,8 @@ public class RobotContainer {
         zeroGyro.onTrue(new InstantCommand(swerve::zeroGyro));
         auto.onTrue(new PPSwerveCommand(swerve, true, PathPlanner.loadPath("Move Left", new PathConstraints(1,1))));
         auto2.onTrue(swerve.autoBalance());
-        moveUpButton.onTrue(elevator.moveUp());
-        moveDownButton.onTrue(elevator.moveDown());
+        moveUpButton.whileTrue(elevator.moveUp());
+        moveDownButton.whileTrue(elevator.moveDown());
     }
 
     /**
