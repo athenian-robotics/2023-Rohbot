@@ -11,33 +11,47 @@ import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 public class Arm extends SubsystemBase {
     private final WPI_TalonFX armRotate;
     private final CANSparkMax grabberRotate;
-    private final DoubleSolenoid leftSolenoid;
-    private final DoubleSolenoid rightSolenoid;
+    private final DoubleSolenoid grabberPistonLeft;
+    private final DoubleSolenoid grabberPistonRight;
+    private final Logger logger;
 
     public Arm() {
         armRotate = new WPI_TalonFX(Constants.ArmConstants.ARM_ROTATE);
         grabberRotate = new CANSparkMax(Constants.ArmConstants.GRABBER_ROTATE, CANSparkMaxLowLevel.MotorType.kBrushless);
-        leftSolenoid = new DoubleSolenoid(Constants.ArmConstants.PNEUMATIC_HUB, PneumaticsModuleType.REVPH,
+        grabberPistonLeft = new DoubleSolenoid(Constants.ArmConstants.PNEUMATIC_HUB, PneumaticsModuleType.REVPH,
                 Constants.ArmConstants.LEFT_SOLENOID_FORWARD, Constants.ArmConstants.LEFT_SOLENOID_REVERSE);
-        rightSolenoid = new DoubleSolenoid(Constants.ArmConstants.PNEUMATIC_HUB, PneumaticsModuleType.REVPH,
+        grabberPistonRight = new DoubleSolenoid(Constants.ArmConstants.PNEUMATIC_HUB, PneumaticsModuleType.REVPH,
                 Constants.ArmConstants.RIGHT_SOLENOID_FORWARD, Constants.ArmConstants.RIGHT_SOLENOID_REVERSE);
-        leftSolenoid.set(DoubleSolenoid.Value.kForward);
-        rightSolenoid.set(DoubleSolenoid.Value.kForward);
+        grabberPistonLeft.set(DoubleSolenoid.Value.kForward);
+        grabberPistonRight.set(DoubleSolenoid.Value.kForward);
+        logger = Logger.getLogger(this.getClass().getName());
     }
 
+    /**
+     * Toggles the grabber pistons.
+     *
+     * @return a command that toggles the grabber pistons
+     */
     public Command toggleGrabber() {
         return new InstantCommand(
                 () -> {
-                    leftSolenoid.toggle();
-                    rightSolenoid.toggle();
+                    grabberPistonLeft.toggle();
+                    grabberPistonRight.toggle();
                 },
                 this
         );
     }
-
+    /**
+     * Moves the arm up until it reaches the maximum height.
+     *
+     * @return a command that moves the arm up
+     */
     public Command moveUp() {
         return new StartEndCommand(
                 () -> {
@@ -45,7 +59,7 @@ public class Arm extends SubsystemBase {
                         armRotate.set(-0.1);
                     } else {
                         armRotate.set(0);
-                        System.out.println("Arm Stopped");
+                        logger.log(Level.INFO, "Arm Stopped");
                     }
                 },
                 () -> armRotate.set(0)
@@ -59,13 +73,17 @@ public class Arm extends SubsystemBase {
                         armRotate.set(0.1);
                     } else {
                         armRotate.set(0);
-                        System.out.println("Arm Stopped");
+                        logger.log(Level.INFO, "Arm Stopped");
                     }
                 },
                 () -> armRotate.set(0)
         );
     }
-
+    /**
+     * Spins the grabber motor.
+     *
+     * @return a command that spins the grabber motor
+     */
     public Command spinGrabber() {
         return new StartEndCommand(
                 () -> {
