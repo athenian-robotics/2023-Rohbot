@@ -34,11 +34,16 @@ public class RobotContainer {
     private final JoystickButton auto2 = new JoystickButton(driver, XboxController.Button.kB.value);
     private final JoystickButton moveUpButton = new JoystickButton(driver, XboxController.Button.kY.value);
     private final JoystickButton moveDownButton = new JoystickButton(driver, XboxController.Button.kA.value);
+    private final JoystickButton moveUpGrabberButton = new JoystickButton(driver, XboxController.Button.kA.value);
+    private final JoystickButton moveDownGrabberButton = new JoystickButton(driver, XboxController.Button.kA.value);
+    private final JoystickButton toggleGrabber = new JoystickButton(driver, XboxController.Button.kA.value);
+    private final JoystickButton spinGrabber = new JoystickButton(driver, XboxController.Button.kA.value);
 
 
     /* Subsystems */
     private final Swerve swerve = new Swerve();
     private final Elevator elevator = new Elevator();
+    private final Arm arm = new Arm();
 
     /** The container for the robot. Contains subsystems, OI devices, and commands. */
     public RobotContainer() {
@@ -69,6 +74,11 @@ public class RobotContainer {
         auto2.onTrue(swerve.autoBalance());
         moveUpButton.whileTrue(elevator.moveUp());
         moveDownButton.whileTrue(elevator.moveDown());
+        moveUpGrabberButton.whileTrue(arm.moveUp());
+        moveDownGrabberButton.whileTrue(arm.moveDown());
+        toggleGrabber.onTrue(arm.toggleGrabber());
+        spinGrabber.whileTrue(arm.spinGrabber());
+
     }
 
     /**
