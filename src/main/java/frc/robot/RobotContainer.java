@@ -2,6 +2,7 @@ package frc.robot;
 
 import com.pathplanner.lib.PathConstraints;
 import com.pathplanner.lib.PathPlanner;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.Joystick;
@@ -65,8 +66,7 @@ public class RobotContainer {
                         swerve,
                         () -> -driver.getRawAxis(translationAxis),
                         () -> -driver.getRawAxis(strafeAxis),
-                        () -> Math.atan(driver.getRawAxis(-XboxController.Axis.kRightY.value)/driver.getRawAxis(-XboxController.Axis.kRightX.value)),
-                        robotCentric
+                        () -> new Rotation2d(Math.atan(driver.getRawAxis(-XboxController.Axis.kRightY.value)/driver.getRawAxis(-XboxController.Axis.kRightX.value)))
                 )
         );
 
