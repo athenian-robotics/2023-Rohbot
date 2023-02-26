@@ -1,6 +1,5 @@
 package frc.robot.subsystems;
 
-
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
@@ -17,30 +16,37 @@ public class Grabber extends SubsystemBase {
   private final DoubleSolenoid rightSolenoid;
 
   public Grabber() {
-    grabberRotate = new CANSparkMax(Constants.GrabberConstants.grabberSpinMotorID, CANSparkMaxLowLevel.MotorType.kBrushless);
-    leftSolenoid = new DoubleSolenoid(Constants.GrabberConstants.PNEUMATIC_HUB, PneumaticsModuleType.REVPH,
-            Constants.GrabberConstants.LEFT_SOLENOID_FORWARD, Constants.GrabberConstants.LEFT_SOLENOID_REVERSE);
-    rightSolenoid = new DoubleSolenoid(Constants.GrabberConstants.PNEUMATIC_HUB, PneumaticsModuleType.REVPH,
-            Constants.GrabberConstants.RIGHT_SOLENOID_FORWARD, Constants.GrabberConstants.RIGHT_SOLENOID_REVERSE);
+    grabberRotate =
+        new CANSparkMax(
+            Constants.GrabberConstants.grabberSpinMotorID,
+            CANSparkMaxLowLevel.MotorType.kBrushless);
+    leftSolenoid =
+        new DoubleSolenoid(
+            Constants.GrabberConstants.PNEUMATIC_HUB,
+            PneumaticsModuleType.REVPH,
+            Constants.GrabberConstants.LEFT_SOLENOID_FORWARD,
+            Constants.GrabberConstants.LEFT_SOLENOID_REVERSE);
+    rightSolenoid =
+        new DoubleSolenoid(
+            Constants.GrabberConstants.PNEUMATIC_HUB,
+            PneumaticsModuleType.REVPH,
+            Constants.GrabberConstants.RIGHT_SOLENOID_FORWARD,
+            Constants.GrabberConstants.RIGHT_SOLENOID_REVERSE);
     leftSolenoid.set(DoubleSolenoid.Value.kForward);
     rightSolenoid.set(DoubleSolenoid.Value.kForward);
   }
 
   public Command toggleGrabber() {
     return new InstantCommand(
-          () -> {
-            leftSolenoid.toggle();
-            rightSolenoid.toggle();
-          },
-          this
-    );
+        () -> {
+          leftSolenoid.toggle();
+          rightSolenoid.toggle();
+        },
+        this);
   }
 
   public Command spinGrabber() {
     return new StartEndCommand(
-          () -> grabberRotate.set(Constants.GrabberConstants.SPIN_SPEED),
-          () -> grabberRotate.set(0)
-    );
+        () -> grabberRotate.set(Constants.GrabberConstants.SPIN_SPEED), () -> grabberRotate.set(0));
   }
 }
-
