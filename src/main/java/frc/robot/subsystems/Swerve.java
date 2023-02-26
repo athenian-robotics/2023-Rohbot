@@ -4,6 +4,8 @@ import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.controller.LTVDifferentialDriveController;
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.controller.ProfiledPIDController;
+import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.kinematics.*;
 import edu.wpi.first.math.system.plant.LinearSystemId;
 import edu.wpi.first.networktables.GenericEntry;
@@ -27,6 +29,9 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 import java.util.Map;
+import java.util.function.BooleanSupplier;
+import java.util.function.DoubleSupplier;
+import java.util.function.Supplier;
 
 import static com.ctre.phoenix.motorcontrol.NeutralMode.Brake;
 
@@ -34,21 +39,24 @@ public class Swerve extends SubsystemBase {
     public SwerveDriveOdometry swerveOdometry;
     public SwerveModule[] mSwerveMods;
     public Pigeon2 gyro;
-    private MotorControllerGroup left;
-    private MotorControllerGroup right;
     private final DifferentialDrive drive;
-    private PIDController pid;
+    private final PIDController pid;
     private final double kP = 0.018;
     private final double kI = 0;
     private final double kD = 0.001;
-    private GenericEntry pitchEntry;
-    private GenericEntry pEffect;
-    private GenericEntry dEffect;
+    private final GenericEntry pitchEntry;
+    private final GenericEntry pEffect;
+    private final GenericEntry dEffect;
 
+    ProfiledPIDController thetaController =
+            new ProfiledPIDController(
+            Constants.AutoConstants.kPThetaController, 0, 0, Constants.AutoConstants.kThetaControllerConstraints);
 
     private final LTVDifferentialDriveController controller;
 
     public Swerve() {
+        thetaController.enableContinuousInput(-Math.PI, Math.PI);
+
         gyro = new Pigeon2(Constants.Swerve.pigeonID);
         gyro.configFactoryDefault();
         zeroGyro();
@@ -60,8 +68,8 @@ public class Swerve extends SubsystemBase {
             new SwerveModule(3, Constants.Swerve.Mod3.constants)
         };
 
-        left = new MotorControllerGroup(mSwerveMods[0].getDriveMotor(), mSwerveMods[2].getDriveMotor());
-        right = new MotorControllerGroup(mSwerveMods[1].getDriveMotor(), mSwerveMods[3].getDriveMotor());
+        MotorControllerGroup left = new MotorControllerGroup(mSwerveMods[0].getDriveMotor(), mSwerveMods[2].getDriveMotor());
+        MotorControllerGroup right = new MotorControllerGroup(mSwerveMods[1].getDriveMotor(), mSwerveMods[3].getDriveMotor());
 
         mSwerveMods[0].getAngleMotor().setNeutralMode(Brake);
         mSwerveMods[1].getAngleMotor().setNeutralMode(Brake);
@@ -130,6 +138,17 @@ public class Swerve extends SubsystemBase {
         for(SwerveModule mod : mSwerveMods){
             mod.setDesiredState(swerveModuleStates[mod.moduleNumber], isOpenLoop);
         }
+    }
+
+    public void drive(Translation2d translation, Rotation2d roation) {
+        thetaController.reset(getPose().getRotation().getRadians());
+        thetaController.setGoal(roation.getRadians());
+
+        while (!thetaController.atGoal()) {
+            double theta = thetaController.calculate(getPose().getRotation().getRadians());
+            drive(translation, theta, true, false);
+        }
+
     }
 
     /* Used by SwerveControllerCommand in Auto */
@@ -219,6 +238,42 @@ public class Swerve extends SubsystemBase {
 //                this
 //        ).until(() -> -Math.abs(gyro.getPitch())<=0.5);
 //    }
+
+    public Command drive(Swerve s_Swerve, DoubleSupplier translationSup, DoubleSupplier strafeSup, DoubleSupplier rotationSup, BooleanSupplier robotCentricSup) {
+        SlewRateLimiter translationLimiter = new SlewRateLimiter(2);
+        SlewRateLimiter strafeLimiter = new SlewRateLimiter(2);
+
+        return new RunCommand(() -> {
+            double translationVal = translationLimiter.calculate(MathUtil.applyDeadband(translationSup.getAsDouble(), Constants.stickDeadband));
+            double strafeVal = strafeLimiter.calculate(MathUtil.applyDeadband(strafeSup.getAsDouble(), Constants.stickDeadband));
+            double rotationVal = MathUtil.applyDeadband(rotationSup.getAsDouble(), Constants.stickDeadband);
+
+            /* Drive */
+            s_Swerve.drive(
+                    new Translation2d(translationVal, strafeVal).times(Constants.Swerve.maxSpeed),
+                    rotationVal * Constants.Swerve.maxAngularVelocity,
+                    !robotCentricSup.getAsBoolean(),
+                    true
+            );
+        });
+    }
+
+
+    public Command drive(Swerve s_Swerve, DoubleSupplier translationSup, DoubleSupplier strafeSup, Supplier<Rotation2d> rotationSup) {
+        SlewRateLimiter translationLimiter = new SlewRateLimiter(2);
+        SlewRateLimiter strafeLimiter = new SlewRateLimiter(2);
+
+        return new RunCommand(() -> {
+            double translationVal = translationLimiter.calculate(MathUtil.applyDeadband(translationSup.getAsDouble(), Constants.stickDeadband));
+            double strafeVal = strafeLimiter.calculate(MathUtil.applyDeadband(strafeSup.getAsDouble(), Constants.stickDeadband));
+
+            /* Drive */
+            s_Swerve.drive(
+                    new Translation2d(translationVal, strafeVal).times(Constants.Swerve.maxSpeed),
+                rotationSup.get()
+            );
+        });
+    }
 
     @Override
     public void periodic(){

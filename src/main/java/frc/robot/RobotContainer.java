@@ -9,7 +9,6 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 
 import frc.robot.autos.*;
-import frc.robot.commands.*;
 import frc.robot.subsystems.*;
 
 /**
@@ -47,14 +46,24 @@ public class RobotContainer {
 
     /** The container for the robot. Contains subsystems, OI devices, and commands. */
     public RobotContainer() {
+//        swerve.setDefaultCommand(
+//            swerve.drive(
+//                    swerve,
+//                () -> -driver.getRawAxis(translationAxis),
+//                () -> -driver.getRawAxis(strafeAxis),
+//                () -> -driver.getRawAxis(rotationAxis),
+//                    robotCentric
+//            )
+//        );
+
         swerve.setDefaultCommand(
-            new TeleopSwerve(
-                    swerve,
-                () -> -driver.getRawAxis(translationAxis),
-                () -> -driver.getRawAxis(strafeAxis),
-                () -> -driver.getRawAxis(rotationAxis),
-                    robotCentric
-            )
+                swerve.drive(
+                        swerve,
+                        () -> -driver.getRawAxis(translationAxis),
+                        () -> -driver.getRawAxis(strafeAxis),
+                        () -> Math.atan(driver.getRawAxis(-XboxController.Axis.kRightY.value)/driver.getRawAxis(-XboxController.Axis.kRightX.value)),
+                        robotCentric
+                )
         );
 
         // Configure the button bindings
