@@ -31,5 +31,6 @@ public class PPSwerveCommand extends SequentialCommandGroup {
                     drivetrain // Requires this drive subsystem
             )
     );
+    addRequirements(drivetrain);
   }
 }

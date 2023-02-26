@@ -148,16 +148,22 @@ public final class Constants {
     }
 
     public static final class ArmConstants { //TODO: Replace dummy values
-        public static final int ARM_ROTATE = 16;
-        public static final int GRABBER_ROTATE = 17;
+        public static final int armMotorID = 16;
+        public static final double ARM_MOVE_SPEED = 0.1;
+
+        public static final double MIN_HEIGHT = -0.0;
+        public static final double MAX_HEIGHT = -100.0;
+    }
+
+    public static final class GrabberConstants {
+        public static final int grabberSpinMotorID = 17;
         public static final int PNEUMATIC_HUB = 18;
         public static final int LEFT_SOLENOID_FORWARD = 1;
         public static final int LEFT_SOLENOID_REVERSE = 2;
         public static final int RIGHT_SOLENOID_FORWARD = 3;
         public static final int RIGHT_SOLENOID_REVERSE = 4;
 
-        public static final double MIN_HEIGHT = -0.0;
-        public static final double MAX_HEIGHT = -100.0;
+        public static final double SPIN_SPEED = 0.1;
     }
 
     public static final class AutoConstants { //TODO: The below constants are used in the example auto, and must be tuned to specific robot

@@ -4,6 +4,7 @@ import com.pathplanner.lib.PathConstraints;
 import com.pathplanner.lib.PathPlanner;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
@@ -20,6 +21,8 @@ import frc.robot.subsystems.*;
 public class RobotContainer {
     /* Controllers */
     public static XboxController driver = new XboxController(0);
+    private static Joystick leftJoystick = new Joystick(1);
+    private static Joystick rightJoystick = new Joystick(2);
 
     /* Drive Controls */
     private final int translationAxis = XboxController.Axis.kLeftY.value;
@@ -43,6 +46,7 @@ public class RobotContainer {
     private final Swerve swerve = new Swerve();
     private final Elevator elevator = new Elevator();
     private final Arm arm = new Arm();
+    private final Grabber grabber = new Grabber();
 
     /** The container for the robot. Contains subsystems, OI devices, and commands. */
     public RobotContainer() {
@@ -85,8 +89,8 @@ public class RobotContainer {
         moveDownButton.whileTrue(elevator.moveDown());
         moveUpGrabberButton.whileTrue(arm.moveUp());
         moveDownGrabberButton.whileTrue(arm.moveDown());
-        toggleGrabber.onTrue(arm.toggleGrabber());
-        spinGrabber.whileTrue(arm.spinGrabber());
+        toggleGrabber.onTrue(grabber.toggleGrabber());
+        spinGrabber.whileTrue(grabber.spinGrabber());
 
     }
 

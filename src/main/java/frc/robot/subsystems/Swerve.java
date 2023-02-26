@@ -1,5 +1,8 @@
 package frc.robot.subsystems;
 
+import com.pathplanner.lib.PathConstraints;
+import com.pathplanner.lib.PathPlanner;
+import com.pathplanner.lib.PathPoint;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.controller.LTVDifferentialDriveController;
@@ -27,7 +30,9 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.autos.PPSwerveCommand;
 
+import java.util.List;
 import java.util.Map;
 import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
@@ -198,6 +203,10 @@ public class Swerve extends SubsystemBase {
         }
     }
 
+    public void tankDrive(double leftPower, double rightPower){
+        drive.tankDrive(leftPower, rightPower);
+    }
+
     public Command autoBalance() {
         pid.setSetpoint(0);
         pid.setTolerance(3);
@@ -211,33 +220,46 @@ public class Swerve extends SubsystemBase {
         );
     }
 
-    public void tankDrive(double leftPower, double rightPower){
-        drive.tankDrive(leftPower, rightPower);
+    public void setHeading(double theta) {
+        Pose2d pose = getPose();
+
+        new PPSwerveCommand(
+                this,
+                false,
+                PathPlanner.generatePath(
+                        new PathConstraints(Constants.Swerve.maxSpeed, 5),
+                        List.of(new PathPoint(pose.getTranslation(), Rotation2d.fromDegrees(theta)))
+                )
+        ).schedule();
     }
 
-//    public Command getAutoBalancing() {
-//        return new RunCommand(
-//                () -> {
-//                    var v = controller.calculate(
-//                            getPose(),
-//                            (mSwerveMods[0].getState().speedMetersPerSecond + mSwerveMods[2].getState().speedMetersPerSecond)/2,
-//                            (mSwerveMods[1].getState().speedMetersPerSecond + mSwerveMods[3].getState().speedMetersPerSecond)/2,
-//                            new Pose2d(),
-//                            0,
-//                            0
-//                    );
-//                    left.setVoltage(v.left);
-//                    right.setVoltage(v.right);
-//
-//                    for (SwerveModule mod : mSwerveMods) {
-//                        mod.setAngle(new SwerveModuleState(42069, Rotation2d.fromDegrees(0))); // dummy value to bypass jitter checks in setangle
-//                    }
-//
-//                    drive.feed();
-//                },
-//                this
-//        ).until(() -> -Math.abs(gyro.getPitch())<=0.5);
-//    }
+/*
+    Untested
+
+    public Command getAutoBalancing() {
+        return new RunCommand(
+                () -> {
+                    var v = controller.calculate(
+                            getPose(),
+                            (mSwerveMods[0].getState().speedMetersPerSecond + mSwerveMods[2].getState().speedMetersPerSecond)/2,
+                            (mSwerveMods[1].getState().speedMetersPerSecond + mSwerveMods[3].getState().speedMetersPerSecond)/2,
+                            new Pose2d(),
+                            0,
+                            0
+                    );
+                    left.setVoltage(v.left);
+                    right.setVoltage(v.right);
+
+                    for (SwerveModule mod : mSwerveMods) {
+                        mod.setAngle(new SwerveModuleState(42069, Rotation2d.fromDegrees(0))); // dummy value to bypass jitter checks in setangle
+                    }
+
+                    drive.feed();
+                },
+                this
+        ).until(() -> -Math.abs(gyro.getPitch())<=0.5);
+    }
+ */
 
     public Command drive(Swerve s_Swerve, DoubleSupplier translationSup, DoubleSupplier strafeSup, DoubleSupplier rotationSup, BooleanSupplier robotCentricSup) {
         SlewRateLimiter translationLimiter = new SlewRateLimiter(2);
