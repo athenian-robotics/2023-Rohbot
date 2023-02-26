@@ -13,6 +13,7 @@ import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.autos.*;
 import frc.robot.subsystems.*;
 
+
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
  * "declarative" paradigm, very little robot logic should actually be handled in the {@link Robot}
@@ -66,7 +67,10 @@ public class RobotContainer {
                         swerve,
                         () -> -driver.getRawAxis(translationAxis),
                         () -> -driver.getRawAxis(strafeAxis),
-                        () -> new Rotation2d(Math.atan(driver.getRawAxis(-XboxController.Axis.kRightY.value)/driver.getRawAxis(-XboxController.Axis.kRightX.value)))
+                        () -> {
+                            System.out.println(Math.atan2(-driver.getRawAxis(XboxController.Axis.kRightY.value), -driver.getRawAxis(XboxController.Axis.kRightX.value)));
+                            return new Rotation2d(Math.atan2(-driver.getRawAxis(XboxController.Axis.kRightY.value), -driver.getRawAxis(XboxController.Axis.kRightX.value)));
+                        }
                 )
         );
 

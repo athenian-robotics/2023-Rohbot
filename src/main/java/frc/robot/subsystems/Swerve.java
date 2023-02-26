@@ -138,6 +138,7 @@ public class Swerve extends SubsystemBase {
                                     translation.getY(),
                                     rotation)
                                 );
+
         SwerveDriveKinematics.desaturateWheelSpeeds(swerveModuleStates, Constants.Swerve.maxSpeed);
 
         for(SwerveModule mod : mSwerveMods){
@@ -148,7 +149,7 @@ public class Swerve extends SubsystemBase {
     public void drive(Translation2d translation, Rotation2d roation) {
         thetaController.reset(getPose().getRotation().getRadians());
         thetaController.setGoal(roation.getRadians());
-
+        thetaController.setTolerance(0.05);
         while (!thetaController.atGoal()) {
             double theta = thetaController.calculate(getPose().getRotation().getRadians());
             drive(translation, theta, true, false);
@@ -277,7 +278,7 @@ public class Swerve extends SubsystemBase {
                     !robotCentricSup.getAsBoolean(),
                     true
             );
-        });
+        },this);
     }
 
 
@@ -294,7 +295,7 @@ public class Swerve extends SubsystemBase {
                     new Translation2d(translationVal, strafeVal).times(Constants.Swerve.maxSpeed),
                 rotationSup.get()
             );
-        });
+        },this);
     }
 
     @Override

@@ -26,13 +26,13 @@ public class Elevator extends SubsystemBase {
     private final GenericEntry velocity;
     private final LinearSystemLoop<N2, N1, N1> loop;
     private final WPI_TalonFX leftMotor;
+    private final WPI_TalonFX rightMotor;
     private double pos = 0;
-    private static State state = State.POS;
-
+    private static State state = State.VELO;
     
     public Elevator() {
         leftMotor = new WPI_TalonFX(Constants.ElevatorConstants.LEFT_MOTOR);
-        WPI_TalonFX rightMotor = new WPI_TalonFX(Constants.ElevatorConstants.RIGHT_MOTOR);
+        rightMotor = new WPI_TalonFX(Constants.ElevatorConstants.RIGHT_MOTOR);
         leftMotor.setNeutralMode(NeutralMode.Brake);
         rightMotor.setNeutralMode(NeutralMode.Brake);
         this.elevatorMotors = new MotorControllerGroup(leftMotor, rightMotor);
@@ -40,10 +40,10 @@ public class Elevator extends SubsystemBase {
         position = tab.add("Elevator Position", leftMotor.getSelectedSensorPosition()).getEntry();
         velocity = tab.add("Elevator Speed", leftMotor.getSelectedSensorVelocity()).getEntry();
 
-        LinearSystem<N2, N1, N1> sys = LinearSystemId.createElevatorSystem(DCMotor.getFalcon500(2), 0, 0, 0);
+        LinearSystem<N2, N1, N1> sys = LinearSystemId.createElevatorSystem(DCMotor.getFalcon500(2), 0.1, 0.1, 0.1);
 //        sys = LinearSystemId.identifyPositionSystem(Constants.Elevator.kv, Constants.Elevator.ka)
         KalmanFilter<N2, N1, N1> filter = new KalmanFilter<>(Nat.N2(), Nat.N1(), sys,
-                VecBuilder.fill(0, 0), VecBuilder.fill(0), 0.02);
+                VecBuilder.fill(0.1, 0.1), VecBuilder.fill(0.1), 0.02);
         LinearQuadraticRegulator<N2, N1, N1> controller = new LinearQuadraticRegulator<N2, N1, N1>(sys,
                 VecBuilder.fill(0.1, 0.1), VecBuilder.fill(0.1), 0.02);
         loop = new LinearSystemLoop<>(sys, controller, filter, 12, 0.02);
@@ -62,14 +62,14 @@ public class Elevator extends SubsystemBase {
                 () -> {
                     state = State.VELO;
                     if (leftMotor.getSelectedSensorPosition() > Constants.ElevatorConstants.MAX_HEIGHT) {
-                        setMotorSpeed(-0.1);
+                        setMotorSpeed(-Constants.ElevatorConstants.ELEVATOR_MOVE_SPEED);
                     } else {
                         setMotorSpeed(0);
                         System.out.println("Stopped");
                     }
                 },
                 () -> setMotorSpeed(0)
-        , this);
+                , this);
     }
 
     public Command moveDown() {
@@ -77,16 +77,15 @@ public class Elevator extends SubsystemBase {
                 () -> {
                     state = State.VELO;
                     if (leftMotor.getSelectedSensorPosition() < Constants.ElevatorConstants.MIN_HEIGHT) {
-                        setMotorSpeed(0.1);
+                        setMotorSpeed(Constants.ElevatorConstants.ELEVATOR_MOVE_SPEED);
                     } else {
                         setMotorSpeed(0);
                         System.out.println("Stopped");
                     }
                 },
                 () -> setMotorSpeed(0)
-                        , this);
+                , this);
     }
-
 
     /**
      * Sets the elevator to a certain percent of max height
@@ -94,16 +93,21 @@ public class Elevator extends SubsystemBase {
      * @return command that does the thing
      */
     public Command set(double percent) {
-        return new RunCommand(() -> {state = State.POS; pos = percent * (Constants.ElevatorConstants.MAX_HEIGHT-Constants.ElevatorConstants.MIN_HEIGHT) + Constants.ElevatorConstants.MIN_HEIGHT ;}, this).until(() -> loop.getError().get(0,0) < 0.1 && loop.getError().get(1,0) < 0.1);
+        return new RunCommand(() -> {
+            state = State.POS;
+            pos = percent * (Constants.ElevatorConstants.MAX_HEIGHT-Constants.ElevatorConstants.MIN_HEIGHT) + Constants.ElevatorConstants.MIN_HEIGHT ;}, this)
+                .until(() -> loop.getError().get(0,0) < 0.1 && loop.getError().get(1,0) < 0.1);
     }
+
     @Override
     public void periodic(){
         if (state == State.POS) {
-            loop.setNextR(pos);
+            loop.setNextR(pos, 0);
             loop.correct(VecBuilder.fill(leftMotor.getSelectedSensorPosition()));
             loop.predict(0.02);
             elevatorMotors.setVoltage(loop.getU(0) + Constants.ElevatorConstants.kS);
         }
+
         position.setDouble(leftMotor.getSelectedSensorPosition());
         velocity.setDouble(leftMotor.getSelectedSensorVelocity());
     }
