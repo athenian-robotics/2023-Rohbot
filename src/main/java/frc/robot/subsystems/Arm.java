@@ -27,7 +27,7 @@ public class Arm extends SubsystemBase {
     armRotate = new WPI_TalonFX(Constants.ArmConstants.armMotorID);
 
     LinearSystem<N2, N1, N1> sys =
-        LinearSystemId.createElevatorSystem(DCMotor.getFalcon500(2), 0.1, 0.1, 0.1);
+        LinearSystemId.createSingleJointedArmSystem(DCMotor.getFalcon500(1), 0.1, 0.1);
     //        sys = LinearSystemId.identifyPositionSystem(Constants.Elevator.kv,
     // Constants.Elevator.ka)
     KalmanFilter<N2, N1, N1> filter =

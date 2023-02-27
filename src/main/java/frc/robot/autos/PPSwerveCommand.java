@@ -7,6 +7,7 @@ import com.pathplanner.lib.commands.PPSwerveControllerCommand;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import frc.robot.Constants;
 import frc.robot.subsystems.Swerve;
 
 public class PPSwerveCommand extends SequentialCommandGroup {
@@ -24,12 +25,12 @@ public class PPSwerveCommand extends SequentialCommandGroup {
             drivetrain::getPose, // Pose supplier
             swerveKinematics, // SwerveDriveKinematics
             new PIDController(
-                0, 0,
+                    Constants.AutoConstants.kPXController, 0,
                 0), // X controller. Tune these values for your robot. Leaving them 0 will only use
             // feedforwards.
-            new PIDController(0, 0, 0), // Y controller (usually the same values as X controller)
+            new PIDController(Constants.AutoConstants.kPYController, 0, 0), // Y controller (usually the same values as X controller)
             new PIDController(
-                0, 0,
+                Constants.AutoConstants.kPThetaController, 0,
                 0), // Rotation controller. Tune these values for your robot. Leaving them 0 will
             // only use feedforwards.
             drivetrain::setModuleStates, // Module states consumer

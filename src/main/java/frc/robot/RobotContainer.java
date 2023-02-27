@@ -31,24 +31,16 @@ public class RobotContainer {
   private final int rotationAxis = XboxController.Axis.kRightX.value;
 
   /* Driver Buttons */
-  private final JoystickButton zeroGyro =
+  private final JoystickButton xboxX =
       new JoystickButton(driver, XboxController.Button.kX.value);
-  private final JoystickButton auto =
+  private final JoystickButton xboxRB =
       new JoystickButton(driver, XboxController.Button.kRightBumper.value);
-  private final JoystickButton robotCentric =
+  private final JoystickButton xboxLB =
       new JoystickButton(driver, XboxController.Button.kLeftBumper.value);
-  private final JoystickButton auto2 = new JoystickButton(driver, XboxController.Button.kB.value);
-  private final JoystickButton moveUpButton =
+  private final JoystickButton xboxB = new JoystickButton(driver, XboxController.Button.kB.value);
+  private final JoystickButton xboxY =
       new JoystickButton(driver, XboxController.Button.kY.value);
-  private final JoystickButton moveDownButton =
-      new JoystickButton(driver, XboxController.Button.kA.value);
-  private final JoystickButton moveUpGrabberButton =
-      new JoystickButton(driver, XboxController.Button.kA.value);
-  private final JoystickButton moveDownGrabberButton =
-      new JoystickButton(driver, XboxController.Button.kA.value);
-  private final JoystickButton toggleGrabber =
-      new JoystickButton(driver, XboxController.Button.kA.value);
-  private final JoystickButton spinGrabber =
+  private final JoystickButton xboxA =
       new JoystickButton(driver, XboxController.Button.kA.value);
 
   /* Subsystems */
@@ -99,17 +91,17 @@ public class RobotContainer {
    */
   private void configureButtonBindings() {
     /* Driver Buttons */
-    zeroGyro.onTrue(new InstantCommand(swerve::zeroGyro));
-    auto.onTrue(
+    xboxX.onTrue(new InstantCommand(swerve::zeroGyro));
+    xboxRB.onTrue(
         new PPSwerveCommand(
             swerve, true, PathPlanner.loadPath("Move Left", new PathConstraints(1, 1))));
-    auto2.onTrue(swerve.autoBalance());
-    moveUpButton.whileTrue(elevator.moveUp());
-    moveDownButton.whileTrue(elevator.moveDown());
-    moveUpGrabberButton.whileTrue(arm.moveUp());
-    moveDownGrabberButton.whileTrue(arm.moveDown());
-    toggleGrabber.onTrue(grabber.toggleGrabber());
-    spinGrabber.whileTrue(grabber.spinGrabber());
+    xboxB.onTrue(swerve.autoBalance());
+    xboxY.whileTrue(elevator.moveUp());
+    xboxA.whileTrue(elevator.moveDown());
+//    xbox.whileTrue(arm.moveUp());
+//    xboxA.whileTrue(arm.moveDown());
+//    toggleGrabber.onTrue(grabber.toggleGrabber());
+//    spinGrabber.whileTrue(grabber.spinGrabber());
   }
 
   /**

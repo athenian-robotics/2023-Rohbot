@@ -11,6 +11,7 @@ import frc.lib.util.SwerveModuleConstants;
 
 public final class Constants {
   public static final double stickDeadband = 0.1;
+  public static final double driveGearRatio = (6.75 / 1.0);
 
   public static double kv = 0.16037;
   public static double ka = 0.20799;
@@ -23,7 +24,7 @@ public final class Constants {
     public static final boolean invertGyro = false; // Always ensure Gyro is CCW+ CW-
 
     public static final COTSFalconSwerveConstants chosenModule =
-        COTSFalconSwerveConstants.SDSMK4(COTSFalconSwerveConstants.driveGearRatios.SDSMK4_L2);
+        COTSFalconSwerveConstants.SDSMK4(Constants.driveGearRatio);
 
     /* Drivetrain Constants */
     public static final double trackWidth = Units.inchesToMeters(23.75);

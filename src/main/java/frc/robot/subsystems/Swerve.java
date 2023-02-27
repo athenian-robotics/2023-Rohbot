@@ -283,13 +283,13 @@ public class Swerve extends SubsystemBase {
   }
 
   public RepeatCommand drive(
-      DoubleSupplier translationSup, DoubleSupplier strafeSup, Supplier<Rotation2d> roation) {
+      DoubleSupplier translationSup, DoubleSupplier strafeSup, Supplier<Rotation2d> rohtation) {
     SlewRateLimiter translationLimiter = new SlewRateLimiter(2);
     SlewRateLimiter strafeLimiter = new SlewRateLimiter(2);
     return new InstantCommand(
             () -> {
               thetaController.reset(getPose().getRotation().getRadians());
-              thetaController.setGoal(roation.get().getRadians());
+              thetaController.setGoal(rohtation.get().getRadians());
               thetaController.setTolerance(0.05);
             })
         .andThen(
