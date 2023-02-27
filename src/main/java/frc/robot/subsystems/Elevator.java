@@ -57,37 +57,43 @@ public class Elevator extends SubsystemBase {
     POS
   }
 
-  private void setMotorSpeed(double speed) {
-    elevatorMotors.set(speed);
-  }
-
+  /**
+  * Moves the elevator up.
+  * 
+  * @return Command
+  */
   public Command moveUp() {
     return new StartEndCommand(
         () -> {
           state = State.VELO;
           if (leftMotor.getSelectedSensorPosition() > Constants.ElevatorConstants.MAX_HEIGHT) {
-            setMotorSpeed(-Constants.ElevatorConstants.ELEVATOR_MOVE_SPEED);
+            elevatorMotors.set(-Constants.ElevatorConstants.ELEVATOR_MOVE_SPEED);
           } else {
-            setMotorSpeed(0);
+            elevatorMotors.set(0);
             System.out.println("Stopped");
           }
         },
-        () -> setMotorSpeed(0),
+        () -> elevatorMotors.set(0),
         this);
   }
 
+  /**
+   * Moves the elevator down.
+   * 
+   * @return Command
+   */
   public Command moveDown() {
     return new StartEndCommand(
         () -> {
           state = State.VELO;
           if (leftMotor.getSelectedSensorPosition() < Constants.ElevatorConstants.MIN_HEIGHT) {
-            setMotorSpeed(Constants.ElevatorConstants.ELEVATOR_MOVE_SPEED);
+            elevatorMotors.set(Constants.ElevatorConstants.ELEVATOR_MOVE_SPEED);
           } else {
-            setMotorSpeed(0);
+            elevatorMotors.set(0);
             System.out.println("Stopped");
           }
         },
-        () -> setMotorSpeed(0),
+        () -> elevatorMotors.set(0),
         this);
   }
 
@@ -95,7 +101,7 @@ public class Elevator extends SubsystemBase {
    * Sets the elevator to a certain percent of max height
    *
    * @param percent 0-1
-   * @return command that does the thing
+   * @return Command 
    */
   public Command set(double percent) {
     return new RunCommand(

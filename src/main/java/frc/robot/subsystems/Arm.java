@@ -44,6 +44,10 @@ public class Arm extends SubsystemBase {
     POS
   }
 
+  /**
+   * Moves the arm up
+   * @return command that does the thing
+   */
   public Command moveUp() {
     return new StartEndCommand(
         () -> {
@@ -58,6 +62,10 @@ public class Arm extends SubsystemBase {
         () -> armRotate.set(0));
   }
 
+  /**
+   * Moves the arm down
+   * @return command that does the thing
+   */
   public Command moveDown() {
     return new StartEndCommand(
         () -> {
