@@ -1,4 +1,4 @@
-package frc.robot;
+package com.arc852;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.DemandType;
@@ -8,9 +8,9 @@ import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
-import frc.lib.math.Conversions;
-import frc.lib.util.CTREModuleState;
-import frc.lib.util.SwerveModuleConstants;
+import com.lib.math.Conversions;
+import com.lib.util.CTREModuleState;
+import com.lib.util.SwerveModuleConstants;
 import lombok.Getter;
 
 public class SwerveModule {

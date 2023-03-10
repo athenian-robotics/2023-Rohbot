@@ -1,14 +1,14 @@
-package frc.robot.autos;
+package com.arc852.autos;
 
-import static frc.robot.Constants.Swerve.swerveKinematics;
+import static com.arc852.Constants.Swerve.swerveKinematics;
 
 import com.pathplanner.lib.PathPlannerTrajectory;
 import com.pathplanner.lib.commands.PPSwerveControllerCommand;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
-import frc.robot.Constants;
-import frc.robot.subsystems.Swerve;
+import com.arc852.Constants;
+import com.arc852.subsystems.Swerve;
 
 public class PPSwerveCommand extends SequentialCommandGroup {
   public PPSwerveCommand(Swerve drivetrain, boolean isFirstPath, PathPlannerTrajectory traj) {

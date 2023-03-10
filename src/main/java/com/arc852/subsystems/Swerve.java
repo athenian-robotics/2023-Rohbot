@@ -1,4 +1,4 @@
-package frc.robot.subsystems;
+package com.arc852.subsystems;
 
 import static com.ctre.phoenix.motorcontrol.NeutralMode.Brake;
 
@@ -26,9 +26,9 @@ import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.*;
-import frc.robot.Constants;
-import frc.robot.SwerveModule;
-import frc.robot.autos.PPSwerveCommand;
+import com.arc852.Constants;
+import com.arc852.SwerveModule;
+import com.arc852.autos.PPSwerveCommand;
 import java.util.List;
 import java.util.Map;
 import java.util.function.BooleanSupplier;

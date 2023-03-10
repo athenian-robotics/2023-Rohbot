@@ -1,4 +1,4 @@
-package frc.robot.autos;
+package com.arc852.autos;
 
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
@@ -11,8 +11,8 @@ import edu.wpi.first.math.trajectory.TrajectoryGenerator;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.SwerveControllerCommand;
-import frc.robot.Constants;
-import frc.robot.subsystems.Swerve;
+import com.arc852.Constants;
+import com.arc852.subsystems.Swerve;
 import java.util.List;
 
 public class exampleAuto extends SequentialCommandGroup {

@@ -1,17 +1,15 @@
-package frc.robot;
+package com.arc852;
 
 import com.pathplanner.lib.PathConstraints;
 import com.pathplanner.lib.PathPlanner;
-import edu.wpi.first.math.MathUtil;
-import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
-import frc.robot.autos.*;
-import frc.robot.subsystems.*;
+import com.arc852.autos.*;
+import com.arc852.subsystems.*;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -48,33 +46,33 @@ public class RobotContainer {
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
-    //        swerve.setDefaultCommand(
-    //            swerve.drive(
-    //                () -> -driver.getRawAxis(translationAxis),
-    //                () -> -driver.getRawAxis(strafeAxis),
-    //                () -> -driver.getRawAxis(rotationAxis),
-    //                    robotCentric
-    //            )
-    //        );
+            swerve.setDefaultCommand(
+                swerve.drive(
+                    () -> -driver.getRawAxis(translationAxis),
+                    () -> -driver.getRawAxis(strafeAxis),
+                    () -> -driver.getRawAxis(rotationAxis),
+                        () -> false
+                )
+            );
 
-    swerve.setDefaultCommand(
-        swerve.drive(
-            () -> -driver.getRawAxis(translationAxis),
-            () -> -driver.getRawAxis(strafeAxis),
-            () -> {
-              System.out.println(
-                  Math.atan2(
-                      -driver.getRawAxis(XboxController.Axis.kRightY.value),
-                      -driver.getRawAxis(XboxController.Axis.kRightX.value)));
-              return new Rotation2d(
-                  Math.atan2(
-                      MathUtil.applyDeadband(
-                          -driver.getRawAxis(XboxController.Axis.kRightY.value),
-                          Constants.stickDeadband),
-                      MathUtil.applyDeadband(
-                          -driver.getRawAxis(XboxController.Axis.kRightX.value),
-                          Constants.stickDeadband)));
-            }));
+//    swerve.setDefaultCommand(
+//        swerve.drive(
+//            () -> -driver.getRawAxis(translationAxis),
+//            () -> -driver.getRawAxis(strafeAxis),
+//            () -> {
+//              System.out.println(
+//                  Math.atan2(
+//                      -driver.getRawAxis(XboxController.Axis.kRightY.value),
+//                      -driver.getRawAxis(XboxController.Axis.kRightX.value)));
+//              return new Rotation2d(
+//                  Math.atan2(
+//                      MathUtil.applyDeadband(
+//                          -driver.getRawAxis(XboxController.Axis.kRightY.value),
+//                          Constants.stickDeadband),
+//                      MathUtil.applyDeadband(
+//                          -driver.getRawAxis(XboxController.Axis.kRightX.value),
+//                          Constants.stickDeadband)));
+//            }));
 
     // Configure the button bindings
     configureButtonBindings();

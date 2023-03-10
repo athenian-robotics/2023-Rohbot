@@ -1,4 +1,4 @@
-package frc.robot.subsystems;
+package com.arc852.subsystems;
 
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
@@ -17,7 +17,7 @@ import edu.wpi.first.wpilibj.motorcontrol.MotorControllerGroup;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.*;
-import frc.robot.Constants;
+import com.arc852.Constants;
 
 public class Elevator extends SubsystemBase {
   private final MotorControllerGroup elevatorMotors;

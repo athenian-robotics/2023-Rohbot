@@ -1,4 +1,4 @@
-package frc.robot.subsystems;
+package com.arc852.subsystems;
 
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 import edu.wpi.first.math.Nat;
@@ -15,7 +15,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.Constants;
+import com.arc852.Constants;
 
 public class Arm extends SubsystemBase {
   private final WPI_TalonFX armRotate;
