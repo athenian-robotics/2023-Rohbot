@@ -31,17 +31,14 @@ public class RobotContainer {
   private final int rotationAxis = XboxController.Axis.kRightX.value;
 
   /* Driver Buttons */
-  private final JoystickButton xboxX =
-      new JoystickButton(driver, XboxController.Button.kX.value);
+  private final JoystickButton xboxX = new JoystickButton(driver, XboxController.Button.kX.value);
   private final JoystickButton xboxRB =
       new JoystickButton(driver, XboxController.Button.kRightBumper.value);
   private final JoystickButton xboxLB =
       new JoystickButton(driver, XboxController.Button.kLeftBumper.value);
   private final JoystickButton xboxB = new JoystickButton(driver, XboxController.Button.kB.value);
-  private final JoystickButton xboxY =
-      new JoystickButton(driver, XboxController.Button.kY.value);
-  private final JoystickButton xboxA =
-      new JoystickButton(driver, XboxController.Button.kA.value);
+  private final JoystickButton xboxY = new JoystickButton(driver, XboxController.Button.kY.value);
+  private final JoystickButton xboxA = new JoystickButton(driver, XboxController.Button.kA.value);
 
   /* Subsystems */
   private final Swerve swerve = new Swerve();
@@ -98,10 +95,10 @@ public class RobotContainer {
     xboxB.onTrue(swerve.autoBalance());
     xboxY.whileTrue(elevator.moveUp());
     xboxA.whileTrue(elevator.moveDown());
-//    xbox.whileTrue(arm.moveUp());
-//    xboxA.whileTrue(arm.moveDown());
-//    toggleGrabber.onTrue(grabber.toggleGrabber());
-//    spinGrabber.whileTrue(grabber.spinGrabber());
+    //    xbox.whileTrue(arm.moveUp());
+    //    xboxA.whileTrue(arm.moveDown());
+    //    toggleGrabber.onTrue(grabber.toggleGrabber());
+    //    spinGrabber.whileTrue(grabber.spinGrabber());
   }
 
   /**

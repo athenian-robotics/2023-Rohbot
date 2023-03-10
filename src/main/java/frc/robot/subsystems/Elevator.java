@@ -58,10 +58,10 @@ public class Elevator extends SubsystemBase {
   }
 
   /**
-  * Moves the elevator up.
-  * 
-  * @return Command
-  */
+   * Moves the elevator up.
+   *
+   * @return Command
+   */
   public Command moveUp() {
     return new StartEndCommand(
         () -> {
@@ -79,7 +79,7 @@ public class Elevator extends SubsystemBase {
 
   /**
    * Moves the elevator down.
-   * 
+   *
    * @return Command
    */
   public Command moveDown() {
@@ -101,7 +101,7 @@ public class Elevator extends SubsystemBase {
    * Sets the elevator to a certain percent of max height
    *
    * @param percent 0-1
-   * @return Command 
+   * @return Command
    */
   public Command set(double percent) {
     return new RunCommand(

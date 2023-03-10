@@ -39,8 +39,8 @@ public class Grabber extends SubsystemBase {
   /**
    * Toggles the grabber solenoid.
    *
-   * When the grabber is open (not grabbing), this command closes the grabber.
-   * When the grabber is closed (grabbing), this command opens the grabber.
+   * <p>When the grabber is open (not grabbing), this command closes the grabber. When the grabber
+   * is closed (grabbing), this command opens the grabber.
    *
    * @return The command to execute.
    */
@@ -53,9 +53,7 @@ public class Grabber extends SubsystemBase {
         this);
   }
 
-  /**
-   * This command spins the grabber motor at a constant speed. 
-   */
+  /** This command spins the grabber motor at a constant speed. */
   public Command spinGrabber() {
     return new StartEndCommand(
         () -> grabberRotate.set(Constants.GrabberConstants.SPIN_SPEED), () -> grabberRotate.set(0));

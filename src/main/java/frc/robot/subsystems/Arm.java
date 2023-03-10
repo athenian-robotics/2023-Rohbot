@@ -46,6 +46,7 @@ public class Arm extends SubsystemBase {
 
   /**
    * Moves the arm up
+   *
    * @return command that does the thing
    */
   public Command moveUp() {
@@ -64,6 +65,7 @@ public class Arm extends SubsystemBase {
 
   /**
    * Moves the arm down
+   *
    * @return command that does the thing
    */
   public Command moveDown() {
