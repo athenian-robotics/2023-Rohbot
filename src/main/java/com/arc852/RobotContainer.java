@@ -29,16 +29,18 @@ public class RobotContainer {
   private final int rotationAxis = XboxController.Axis.kRightX.value;
 
   /* Driver Buttons */
-  private final JoystickButton xboxX = new JoystickButton(driver, XboxController.Button.kX.value);
-  private final JoystickButton xboxRB =
-      new JoystickButton(driver, XboxController.Button.kRightBumper.value);
-  private final JoystickButton xboxLB =
-      new JoystickButton(driver, XboxController.Button.kLeftBumper.value);
-  private final JoystickButton xboxB = new JoystickButton(driver, XboxController.Button.kB.value);
-  private final JoystickButton xboxY = new JoystickButton(driver, XboxController.Button.kY.value);
-  private final JoystickButton xboxA = new JoystickButton(driver, XboxController.Button.kA.value);
-  private final JoystickButton xboxLT = new JoystickButton(driver, XboxController.Axis.kLeftTrigger.value);
-  private final JoystickButton xboxRT = new JoystickButton(driver, XboxController.Axis.kRightTrigger.value);
+  private final JoystickButton resetGyro = new JoystickButton(driver, XboxController.Button.kX.value); //X button
+  private final JoystickButton pathPlanner =
+      new JoystickButton(driver, XboxController.Button.kRightBumper.value); //RB button
+  private final JoystickButton toggleGrabber =
+      new JoystickButton(driver, XboxController.Button.kLeftBumper.value); //LB button
+  private final JoystickButton spinGrabber =
+      new JoystickButton(driver, XboxController.Button.kBack.value); //Back button
+  private final JoystickButton startAutoBalancing = new JoystickButton(driver, XboxController.Button.kB.value); //B button
+  private final JoystickButton moveElevatorUp = new JoystickButton(driver, XboxController.Button.kY.value); //Y button
+  private final JoystickButton moveElevatorDown = new JoystickButton(driver, XboxController.Button.kA.value); //A button
+  private final JoystickButton moveArmUp = new JoystickButton(driver, XboxController.Axis.kLeftTrigger.value); //LT button
+  private final JoystickButton moveArmDown = new JoystickButton(driver, XboxController.Axis.kRightTrigger.value); //RT button
 
   /* Subsystems */
   private final Swerve swerve = new Swerve();
@@ -88,17 +90,17 @@ public class RobotContainer {
    */
   private void configureButtonBindings() {
     /* Driver Buttons */
-    xboxX.onTrue(new InstantCommand(swerve::zeroGyro));
-    xboxRB.onTrue(
+    resetGyro.onTrue(new InstantCommand(swerve::zeroGyro));
+    pathPlanner.onTrue(
         new PPSwerveCommand(
             swerve, true, PathPlanner.loadPath("Move Left", new PathConstraints(1, 1))));
-    xboxB.onTrue(swerve.autoBalance());
-    xboxY.whileTrue(elevator.moveUp());
-    xboxA.whileTrue(elevator.moveDown());
-    xboxLT.whileTrue(arm.moveUp());
-    xboxRT.whileTrue(arm.moveDown());
-    //    toggleGrabber.onTrue(grabber.toggleGrabber());
-    //    spinGrabber.whileTrue(grabber.spinGrabber());
+    startAutoBalancing.onTrue(swerve.autoBalance());
+    moveElevatorUp.whileTrue(elevator.moveUp());
+    moveElevatorDown.whileTrue(elevator.moveDown());
+    moveArmUp.whileTrue(arm.moveUp());
+    moveArmDown.whileTrue(arm.moveDown());
+    toggleGrabber.onTrue(grabber.toggleGrabber());
+    spinGrabber.whileTrue(grabber.spinGrabber());
   }
 
   /**
