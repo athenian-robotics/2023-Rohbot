@@ -11,6 +11,7 @@ import edu.wpi.first.math.system.LinearSystem;
 import edu.wpi.first.math.system.LinearSystemLoop;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.system.plant.LinearSystemId;
+import edu.wpi.first.wpilibj.motorcontrol.MotorControllerGroup;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.StartEndCommand;
@@ -18,13 +19,17 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import com.arc852.Constants;
 
 public class Arm extends SubsystemBase {
-  private final WPI_TalonFX armRotate;
   private final LinearSystemLoop<N2, N1, N1> loop;
   private double pos = 0;
+  private final WPI_TalonFX leftMotor;
+  private final WPI_TalonFX rightMotor;
   private static Arm.State state = Arm.State.POS;
+  private final MotorControllerGroup armGroup;
 
   public Arm() {
-    armRotate = new WPI_TalonFX(Constants.ArmConstants.armMotorID);
+    leftMotor = new WPI_TalonFX(Constants.ArmConstants.LEFT_MOTOR);
+    rightMotor = new WPI_TalonFX(Constants.ArmConstants.RIGHT_MOTOR);
+    armGroup = new MotorControllerGroup(leftMotor, rightMotor);
 
     LinearSystem<N2, N1, N1> sys =
         LinearSystemId.createSingleJointedArmSystem(DCMotor.getFalcon500(1), 0.1, 0.1);
@@ -53,14 +58,14 @@ public class Arm extends SubsystemBase {
     return new StartEndCommand(
         () -> {
           state = State.VELO;
-          if (armRotate.getSelectedSensorPosition() > Constants.ArmConstants.MAX_HEIGHT) {
-            armRotate.set(-Constants.ArmConstants.ARM_MOVE_SPEED);
+          if (leftMotor.getSelectedSensorPosition() > Constants.ArmConstants.MAX_HEIGHT) {
+            armGroup.set(-Constants.ArmConstants.ARM_MOVE_SPEED);
           } else {
-            armRotate.set(0);
+            armGroup.set(0);
             System.out.println("Arm Stopped");
           }
         },
-        () -> armRotate.set(0));
+        () -> armGroup.set(0));
   }
 
   /**
@@ -72,14 +77,14 @@ public class Arm extends SubsystemBase {
     return new StartEndCommand(
         () -> {
           state = State.VELO;
-          if (armRotate.getSelectedSensorPosition() < Constants.ArmConstants.MIN_HEIGHT) {
-            armRotate.set(Constants.ArmConstants.ARM_MOVE_SPEED);
+          if (leftMotor.getSelectedSensorPosition() < Constants.ArmConstants.MIN_HEIGHT) {
+            armGroup.set(Constants.ArmConstants.ARM_MOVE_SPEED);
           } else {
-            armRotate.set(0);
+            armGroup.set(0);
             System.out.println("Arm Stopped");
           }
         },
-        () -> armRotate.set(0));
+        () -> armGroup.set(0));
   }
 
   /**
@@ -104,9 +109,9 @@ public class Arm extends SubsystemBase {
   public void periodic() {
     if (state == Arm.State.POS) {
       loop.setNextR(pos, 0);
-      loop.correct(VecBuilder.fill(armRotate.getSelectedSensorPosition()));
+      loop.correct(VecBuilder.fill(leftMotor.getSelectedSensorPosition()));
       loop.predict(0.02);
-      armRotate.setVoltage(loop.getU(0) + Constants.ArmConstants.kS);
+      armGroup.setVoltage(loop.getU(0) + Constants.ArmConstants.kS);
     }
   }
 }

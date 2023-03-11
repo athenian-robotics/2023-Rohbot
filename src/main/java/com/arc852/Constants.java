@@ -150,7 +150,8 @@ public final class Constants {
   }
 
   public static final class ArmConstants { // TODO: Replace dummy values
-    public static final int armMotorID = 16;
+    public static final int LEFT_MOTOR = 16;
+    public static final int RIGHT_MOTOR = 17;
     public static final double ARM_MOVE_SPEED = 0.1;
 
     public static final double kV = 0.0;
