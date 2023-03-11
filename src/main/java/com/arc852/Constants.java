@@ -162,6 +162,10 @@ public final class Constants {
     public static final double MAX_HEIGHT = -100.0;
   }
 
+  public static final class LedConstants {
+    public static final int LED_PORT = 0;
+  }
+
   public static final class GrabberConstants {
     public static final int grabberSpinMotorID = 17;
     public static final int PNEUMATIC_HUB = 18;
