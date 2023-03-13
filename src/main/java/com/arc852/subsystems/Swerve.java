@@ -50,10 +50,10 @@ public class Swerve extends SubsystemBase {
 
   ProfiledPIDController thetaController =
       new ProfiledPIDController(
-          Constants.AutoConstants.kPThetaController,
+          Constants.Auto.kPThetaController,
           0,
           0,
-          Constants.AutoConstants.kThetaControllerConstraints);
+          Constants.Auto.kThetaControllerConstraints);
 
   private final LTVDifferentialDriveController controller;
 

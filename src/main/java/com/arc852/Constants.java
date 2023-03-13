@@ -138,7 +138,7 @@ public final class Constants {
     }
   }
 
-  public static final class ElevatorConstants { // TODO: MAX_HEIGHT must be tuned further
+  public static final class Elevator { // TODO: MAX_HEIGHT must be tuned further
     public static final double MIN_HEIGHT = -110.0;
     public static final double MAX_HEIGHT = -50000.0;
     public static final int LEFT_MOTOR = 14;
@@ -146,11 +146,10 @@ public final class Constants {
     public static final double kV = 0.0;
     public static final double kA = 0.0;
     public static final double kS = 0.0;
-    public static final double ELEVATOR_MOVE_SPEED = 0.1;
     public static double kG = 0;
   }
 
-  public static final class ArmConstants { // TODO: Replace dummy values
+  public static final class Arm { // TODO: Replace dummy values
     public static final int LEFT_MOTOR = 16;
     public static final int RIGHT_MOTOR = 17;
 
@@ -167,7 +166,7 @@ public final class Constants {
     public static final int LED_PORT = 0;
   }
 
-  public static final class GrabberConstants {
+  public static final class Grabber {
     public static final int grabberSpinMotorID = 17;
     public static final int PNEUMATIC_HUB = 18;
     public static final int LEFT_SOLENOID_FORWARD = 1;
@@ -179,7 +178,7 @@ public final class Constants {
   }
 
   public static final
-  class AutoConstants { // TODO: The below constants are used in the example auto, and must be tuned
+  class Auto { // TODO: The below constants are used in the example auto, and must be tuned
     // to specific robot
     public static final double kMaxSpeedMetersPerSecond = 3;
     public static final double kMaxAccelerationMetersPerSecondSquared = 3;

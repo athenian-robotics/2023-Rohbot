@@ -9,11 +9,11 @@ public class Led {
     canifier = new CANifier(canifierId);
   }
 
-  public void turnOnLed() {
+  public void on() {
     canifier.setLEDOutput(1, CANifier.LEDChannel.LEDChannelA);
   }
 
-  public void turnOffLed() {
+  public void off() {
     canifier.setLEDOutput(0, CANifier.LEDChannel.LEDChannelA);
   }
 }

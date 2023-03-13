@@ -29,8 +29,8 @@ public class Elevator extends SubsystemBase {
       1.0 / 20_000; // fake unit, around 10 rotatoins or 20k ticks
 
   public Elevator() {
-    leftMotor = new WPI_TalonFX(Constants.ElevatorConstants.LEFT_MOTOR);
-    rightMotor = new WPI_TalonFX(Constants.ElevatorConstants.RIGHT_MOTOR);
+    leftMotor = new WPI_TalonFX(Constants.Elevator.LEFT_MOTOR);
+    rightMotor = new WPI_TalonFX(Constants.Elevator.RIGHT_MOTOR);
     leftMotor.setNeutralMode(NeutralMode.Brake);
     rightMotor.setNeutralMode(NeutralMode.Brake);
     this.elevatorMotors = new MotorControllerGroup(leftMotor, rightMotor);
@@ -40,7 +40,7 @@ public class Elevator extends SubsystemBase {
 
     var sys =
         LinearSystemId.identifyPositionSystem(
-            Constants.ElevatorConstants.kV, Constants.ElevatorConstants.kA);
+            Constants.Elevator.kV, Constants.Elevator.kA);
 
     KalmanFilter<N2, N1, N1> filter =
         new KalmanFilter<>(
@@ -70,9 +70,9 @@ public class Elevator extends SubsystemBase {
         () ->
             pos =
                 percent
-                        * (Constants.ElevatorConstants.MAX_HEIGHT
-                            - Constants.ElevatorConstants.MIN_HEIGHT)
-                    + Constants.ElevatorConstants.MIN_HEIGHT,
+                        * (Constants.Elevator.MAX_HEIGHT
+                            - Constants.Elevator.MIN_HEIGHT)
+                    + Constants.Elevator.MIN_HEIGHT,
         this);
   }
 
@@ -83,8 +83,8 @@ public class Elevator extends SubsystemBase {
     loop.predict(0.02);
     elevatorMotors.setVoltage(
         loop.getU(0)
-            + Constants.ElevatorConstants.kS * loop.getNextR(1)
-            + Constants.ElevatorConstants.kG);
+            + Constants.Elevator.kS * loop.getNextR(1)
+            + Constants.Elevator.kG);
 
     position.setDouble(leftMotor.getSelectedSensorPosition());
     velocity.setDouble(leftMotor.getSelectedSensorVelocity());

@@ -21,25 +21,25 @@ public class Grabber extends SubsystemBase {
     controller.enableContinuousInput(-Math.PI, Math.PI);
     motor =
         new CANSparkMax(
-            Constants.GrabberConstants.grabberSpinMotorID,
+            Constants.Grabber.grabberSpinMotorID,
             CANSparkMaxLowLevel.MotorType.kBrushless);
     leftSolenoid =
         new DoubleSolenoid(
-            Constants.GrabberConstants.PNEUMATIC_HUB,
+            Constants.Grabber.PNEUMATIC_HUB,
             PneumaticsModuleType.REVPH,
-            Constants.GrabberConstants.LEFT_SOLENOID_FORWARD,
-            Constants.GrabberConstants.LEFT_SOLENOID_REVERSE);
+            Constants.Grabber.LEFT_SOLENOID_FORWARD,
+            Constants.Grabber.LEFT_SOLENOID_REVERSE);
     rightSolenoid =
         new DoubleSolenoid(
-            Constants.GrabberConstants.PNEUMATIC_HUB,
+            Constants.Grabber.PNEUMATIC_HUB,
             PneumaticsModuleType.REVPH,
-            Constants.GrabberConstants.RIGHT_SOLENOID_FORWARD,
-            Constants.GrabberConstants.RIGHT_SOLENOID_REVERSE);
+            Constants.Grabber.RIGHT_SOLENOID_FORWARD,
+            Constants.Grabber.RIGHT_SOLENOID_REVERSE);
     leftSolenoid.set(DoubleSolenoid.Value.kForward);
     rightSolenoid.set(DoubleSolenoid.Value.kForward);
   }
 
-  public Command openGrabber() {
+  public Command open() {
     return new InstantCommand(
         () -> {
           leftSolenoid.set(DoubleSolenoid.Value.kForward);
@@ -47,7 +47,7 @@ public class Grabber extends SubsystemBase {
         });
   }
 
-  public Command closeGrabber() {
+  public Command close() {
     return new InstantCommand(
         () -> {
           leftSolenoid.set(DoubleSolenoid.Value.kReverse);
@@ -61,7 +61,7 @@ public class Grabber extends SubsystemBase {
    * @param rot The number of radians to rotate the grabber
    * @return The command to execute.
    */
-  public Command spinGrabber(double rot) {
+  public Command spin(double rot) {
     return new InstantCommand(() -> set = rot, this);
   }
 
