@@ -17,15 +17,15 @@ import edu.wpi.first.wpilibj2.command.*;
 public class Arm extends SubsystemBase {
   private final LinearSystemLoop<N2, N1, N1> loop;
   private double pos = 0;
-  private final WPI_TalonFX leftMotor;
-  private final WPI_TalonFX rightMotor;
+  private final WPI_TalonFX bottomMotor;
+  private final WPI_TalonFX topMotor;
   private final MotorControllerGroup armGroup;
-  private final double TICKS_TO_RAD = 2 * Math.PI / 2048; // get gear rato from ********** cad team
+  private final double TICKS_TO_RAD = 2 * Math.PI / 2048 / Constants.Arm.gearRatio; // 1:5 where 1 is the motor and 5 is the arm gear
 
   public Arm() {
-    leftMotor = new WPI_TalonFX(Constants.Arm.LEFT_MOTOR);
-    rightMotor = new WPI_TalonFX(Constants.Arm.RIGHT_MOTOR);
-    armGroup = new MotorControllerGroup(leftMotor, rightMotor);
+    bottomMotor = new WPI_TalonFX(Constants.Arm.LEFT_MOTOR);
+    topMotor = new WPI_TalonFX(Constants.Arm.RIGHT_MOTOR);
+    armGroup = new MotorControllerGroup(bottomMotor, topMotor);
 
     var sys =
         LinearSystemId.identifyPositionSystem(Constants.Arm.kV, Constants.Arm.kA);
@@ -56,7 +56,7 @@ public class Arm extends SubsystemBase {
   @Override
   public void periodic() {
     loop.setNextR(pos, 0);
-    loop.correct(VecBuilder.fill(leftMotor.getSelectedSensorPosition() * TICKS_TO_RAD));
+    loop.correct(VecBuilder.fill(bottomMotor.getSelectedSensorPosition() * TICKS_TO_RAD));
     loop.predict(0.02);
     armGroup.setVoltage(
         loop.getU(0)

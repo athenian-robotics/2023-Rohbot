@@ -141,12 +141,19 @@ public final class Constants {
   public static final class Elevator { // TODO: MAX_HEIGHT must be tuned further
     public static final double MIN_HEIGHT = -110.0;
     public static final double MAX_HEIGHT = -50000.0;
+
     public static final int LEFT_MOTOR = 14;
     public static final int RIGHT_MOTOR = 15;
+
     public static final double kV = 0.0;
     public static final double kA = 0.0;
     public static final double kS = 0.0;
     public static double kG = 0;
+
+    public static final double gearRatio = 0; //TODO: fix this
+
+    public static final double TICKS_TO_ROHUNIT =
+            1.0 / 20_000; // fake unit, around 10 rotatoins or 20k ticks
   }
 
   public static final class Arm { // TODO: Replace dummy values
@@ -160,6 +167,8 @@ public final class Constants {
     public static final double MIN_ANGLE = 0;
     public static final double MAX_ANGLE = 0;
     public static double kG;
+
+    public static final double gearRatio = (5.0 / 1.0);
   }
 
   public static final class LedConstants {
