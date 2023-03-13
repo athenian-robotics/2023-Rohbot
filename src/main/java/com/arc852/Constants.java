@@ -1,13 +1,13 @@
 package com.arc852;
 
 import com.ctre.phoenix.motorcontrol.NeutralMode;
+import com.lib.util.COTSFalconSwerveConstants;
+import com.lib.util.SwerveModuleConstants;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
-import com.lib.util.COTSFalconSwerveConstants;
-import com.lib.util.SwerveModuleConstants;
 
 public final class Constants {
   public static final double stickDeadband = 0.1;
@@ -147,19 +147,20 @@ public final class Constants {
     public static final double kA = 0.0;
     public static final double kS = 0.0;
     public static final double ELEVATOR_MOVE_SPEED = 0.1;
+    public static double kG = 0;
   }
 
   public static final class ArmConstants { // TODO: Replace dummy values
     public static final int LEFT_MOTOR = 16;
     public static final int RIGHT_MOTOR = 17;
-    public static final double ARM_MOVE_SPEED = 0.1;
 
     public static final double kV = 0.0;
     public static final double kA = 0.0;
     public static final double kS = 0.0;
 
-    public static final double MIN_HEIGHT = -0.0;
-    public static final double MAX_HEIGHT = -100.0;
+    public static final double MIN_ANGLE = 0;
+    public static final double MAX_ANGLE = 0;
+    public static double kG;
   }
 
   public static final class LedConstants {

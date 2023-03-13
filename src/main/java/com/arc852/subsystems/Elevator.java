@@ -1,5 +1,6 @@
 package com.arc852.subsystems;
 
+import com.arc852.Constants;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 import edu.wpi.first.math.Nat;
@@ -8,16 +9,13 @@ import edu.wpi.first.math.controller.LinearQuadraticRegulator;
 import edu.wpi.first.math.estimator.KalmanFilter;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N2;
-import edu.wpi.first.math.system.LinearSystem;
 import edu.wpi.first.math.system.LinearSystemLoop;
-import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.system.plant.LinearSystemId;
 import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.wpilibj.motorcontrol.MotorControllerGroup;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.*;
-import com.arc852.Constants;
 
 public class Elevator extends SubsystemBase {
   private final MotorControllerGroup elevatorMotors;
@@ -27,7 +25,8 @@ public class Elevator extends SubsystemBase {
   private final WPI_TalonFX leftMotor;
   private final WPI_TalonFX rightMotor;
   private double pos = 0;
-  private static State state = State.VELO;
+  private final double TICKS_TO_ROHUNIT =
+      1.0 / 20_000; // fake unit, around 10 rotatoins or 20k ticks
 
   public Elevator() {
     leftMotor = new WPI_TalonFX(Constants.ElevatorConstants.LEFT_MOTOR);
@@ -39,62 +38,25 @@ public class Elevator extends SubsystemBase {
     position = tab.add("Elevator Position", leftMotor.getSelectedSensorPosition()).getEntry();
     velocity = tab.add("Elevator Speed", leftMotor.getSelectedSensorVelocity()).getEntry();
 
-    LinearSystem<N2, N1, N1> sys =
-        LinearSystemId.createElevatorSystem(DCMotor.getFalcon500(2), 0.1, 0.1, 0.1);
-    //        sys = LinearSystemId.identifyPositionSystem(Constants.Elevator.kv,
-    // Constants.Elevator.ka)
+    var sys =
+        LinearSystemId.identifyPositionSystem(
+            Constants.ElevatorConstants.kV, Constants.ElevatorConstants.kA);
+
     KalmanFilter<N2, N1, N1> filter =
         new KalmanFilter<>(
-            Nat.N2(), Nat.N1(), sys, VecBuilder.fill(0.1, 0.1), VecBuilder.fill(0.1), 0.02);
+            Nat.N2(),
+            Nat.N1(),
+            sys,
+            VecBuilder.fill(0.1, 0.1),
+            VecBuilder.fill(TICKS_TO_ROHUNIT),
+            0.02); // use rmse for velo and accel
     LinearQuadraticRegulator<N2, N1, N1> controller =
-        new LinearQuadraticRegulator<N2, N1, N1>(
-            sys, VecBuilder.fill(0.1, 0.1), VecBuilder.fill(0.1), 0.02);
+        new LinearQuadraticRegulator<>(
+            sys,
+            VecBuilder.fill(0.1, 0.1),
+            VecBuilder.fill(12),
+            0.02); // error tolerance for pos, velo and then control effort
     loop = new LinearSystemLoop<>(sys, controller, filter, 12, 0.02);
-  }
-
-  enum State {
-    VELO,
-    POS
-  }
-
-  /**
-   * Moves the elevator up.
-   *
-   * @return Command
-   */
-  public Command moveUp() {
-    return new StartEndCommand(
-        () -> {
-          state = State.VELO;
-          if (leftMotor.getSelectedSensorPosition() > Constants.ElevatorConstants.MAX_HEIGHT) {
-            elevatorMotors.set(-Constants.ElevatorConstants.ELEVATOR_MOVE_SPEED);
-          } else {
-            elevatorMotors.set(0);
-            System.out.println("Stopped");
-          }
-        },
-        () -> elevatorMotors.set(0),
-        this);
-  }
-
-  /**
-   * Moves the elevator down.
-   *
-   * @return Command
-   */
-  public Command moveDown() {
-    return new StartEndCommand(
-        () -> {
-          state = State.VELO;
-          if (leftMotor.getSelectedSensorPosition() < Constants.ElevatorConstants.MIN_HEIGHT) {
-            elevatorMotors.set(Constants.ElevatorConstants.ELEVATOR_MOVE_SPEED);
-          } else {
-            elevatorMotors.set(0);
-            System.out.println("Stopped");
-          }
-        },
-        () -> elevatorMotors.set(0),
-        this);
   }
 
   /**
@@ -104,27 +66,25 @@ public class Elevator extends SubsystemBase {
    * @return Command
    */
   public Command set(double percent) {
-    return new RunCommand(
-            () -> {
-              state = State.POS;
-              pos =
-                  percent
-                          * (Constants.ElevatorConstants.MAX_HEIGHT
-                              - Constants.ElevatorConstants.MIN_HEIGHT)
-                      + Constants.ElevatorConstants.MIN_HEIGHT;
-            },
-            this)
-        .until(() -> loop.getError().get(0, 0) < 0.1 && loop.getError().get(1, 0) < 0.1);
+    return new InstantCommand(
+        () ->
+            pos =
+                percent
+                        * (Constants.ElevatorConstants.MAX_HEIGHT
+                            - Constants.ElevatorConstants.MIN_HEIGHT)
+                    + Constants.ElevatorConstants.MIN_HEIGHT,
+        this);
   }
 
   @Override
   public void periodic() {
-    if (state == State.POS) {
-      loop.setNextR(pos, 0);
-      loop.correct(VecBuilder.fill(leftMotor.getSelectedSensorPosition()));
-      loop.predict(0.02);
-      elevatorMotors.setVoltage(loop.getU(0) + Constants.ElevatorConstants.kS);
-    }
+    loop.setNextR(pos * TICKS_TO_ROHUNIT, 0);
+    loop.correct(VecBuilder.fill(leftMotor.getSelectedSensorPosition()));
+    loop.predict(0.02);
+    elevatorMotors.setVoltage(
+        loop.getU(0)
+            + Constants.ElevatorConstants.kS * loop.getNextR(1)
+            + Constants.ElevatorConstants.kG);
 
     position.setDouble(leftMotor.getSelectedSensorPosition());
     velocity.setDouble(leftMotor.getSelectedSensorVelocity());

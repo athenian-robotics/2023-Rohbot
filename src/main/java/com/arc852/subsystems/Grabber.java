@@ -1,22 +1,25 @@
 package com.arc852.subsystems;
 
+import com.arc852.Constants;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel;
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import com.arc852.Constants;
 
 public class Grabber extends SubsystemBase {
-  private final CANSparkMax grabberRotate;
+  private final CANSparkMax motor;
   private final DoubleSolenoid leftSolenoid;
   private final DoubleSolenoid rightSolenoid;
+  private final PIDController controller = new PIDController(0.1, 0, 0);
+  private double set = 0;
 
   public Grabber() {
-    grabberRotate =
+    controller.enableContinuousInput(-Math.PI, Math.PI);
+    motor =
         new CANSparkMax(
             Constants.GrabberConstants.grabberSpinMotorID,
             CANSparkMaxLowLevel.MotorType.kBrushless);
@@ -36,26 +39,34 @@ public class Grabber extends SubsystemBase {
     rightSolenoid.set(DoubleSolenoid.Value.kForward);
   }
 
-  /**
-   * Toggles the grabber solenoid.
-   *
-   * <p>When the grabber is open (not grabbing), this command closes the grabber. When the grabber
-   * is closed (grabbing), this command opens the grabber.
-   *
-   * @return The command to execute.
-   */
-  public Command toggleGrabber() {
+  public Command openGrabber() {
     return new InstantCommand(
         () -> {
-          leftSolenoid.toggle();
-          rightSolenoid.toggle();
-        },
-        this);
+          leftSolenoid.set(DoubleSolenoid.Value.kForward);
+          rightSolenoid.set(DoubleSolenoid.Value.kForward);
+        });
   }
 
-  /** This command spins the grabber motor at a constant speed. */
-  public Command spinGrabber() {
-    return new StartEndCommand(
-        () -> grabberRotate.set(Constants.GrabberConstants.SPIN_SPEED), () -> grabberRotate.set(0));
+  public Command closeGrabber() {
+    return new InstantCommand(
+        () -> {
+          leftSolenoid.set(DoubleSolenoid.Value.kReverse);
+          rightSolenoid.set(DoubleSolenoid.Value.kReverse);
+        });
+  }
+
+  /**
+   * rotates grabber rot radians
+   *
+   * @param rot The number of radians to rotate the grabber
+   * @return The command to execute.
+   */
+  public Command spinGrabber(double rot) {
+    return new InstantCommand(() -> set = rot, this);
+  }
+
+  @Override
+  public void periodic() {
+    motor.setVoltage(controller.calculate(motor.getEncoder().getPosition(), set));
   }
 }

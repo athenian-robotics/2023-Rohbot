@@ -2,6 +2,9 @@ package com.arc852.subsystems;
 
 import static com.ctre.phoenix.motorcontrol.NeutralMode.Brake;
 
+import com.arc852.Constants;
+import com.arc852.SwerveModule;
+import com.arc852.autos.PPSwerveCommand;
 import com.ctre.phoenix.sensors.Pigeon2;
 import com.pathplanner.lib.PathConstraints;
 import com.pathplanner.lib.PathPlanner;
@@ -26,9 +29,6 @@ import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.*;
-import com.arc852.Constants;
-import com.arc852.SwerveModule;
-import com.arc852.autos.PPSwerveCommand;
 import java.util.List;
 import java.util.Map;
 import java.util.function.BooleanSupplier;
@@ -282,10 +282,11 @@ public class Swerve extends SubsystemBase {
         this);
   }
 
-  public RepeatCommand drive(
+  public Command drive(
       DoubleSupplier translationSup, DoubleSupplier strafeSup, Supplier<Rotation2d> rohtation) {
     SlewRateLimiter translationLimiter = new SlewRateLimiter(2);
     SlewRateLimiter strafeLimiter = new SlewRateLimiter(2);
+
     return new InstantCommand(
             () -> {
               thetaController.reset(getPose().getRotation().getRadians());
@@ -294,27 +295,23 @@ public class Swerve extends SubsystemBase {
             })
         .andThen(
             new RunCommand(
-                    () -> {
-                      double translationVal =
-                          translationLimiter.calculate(
-                              MathUtil.applyDeadband(
-                                  translationSup.getAsDouble(), Constants.stickDeadband));
-                      double strafeVal =
-                          strafeLimiter.calculate(
-                              MathUtil.applyDeadband(
-                                  strafeSup.getAsDouble(), Constants.stickDeadband));
-                      SmartDashboard.putNumber("rot", getYaw().getDegrees());
-                      SmartDashboard.putNumber("set", Math.toDegrees(pid.getSetpoint()));
-                      double thetadot = thetaController.calculate(getYaw().getRadians());
-                      drive(
-                          new Translation2d(translationVal, strafeVal)
-                              .times(Constants.Swerve.maxSpeed),
-                          thetadot,
-                          true,
-                          false);
-                    })
-                .until(thetaController::atGoal))
-        .repeatedly();
+                () -> {
+                  double translationVal =
+                      translationLimiter.calculate(
+                          MathUtil.applyDeadband(
+                              translationSup.getAsDouble(), Constants.stickDeadband));
+                  double strafeVal =
+                      strafeLimiter.calculate(
+                          MathUtil.applyDeadband(strafeSup.getAsDouble(), Constants.stickDeadband));
+                  SmartDashboard.putNumber("rot", getYaw().getDegrees());
+                  SmartDashboard.putNumber("set", Math.toDegrees(pid.getSetpoint()));
+                  double thetadot = thetaController.calculate(getYaw().getRadians());
+                  drive(
+                      new Translation2d(translationVal, strafeVal).times(Constants.Swerve.maxSpeed),
+                      thetadot,
+                      true,
+                      true);
+                }));
   }
 
   @Override
