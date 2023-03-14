@@ -25,8 +25,7 @@ public class Elevator extends SubsystemBase {
   private final WPI_TalonFX leftMotor;
   private final WPI_TalonFX rightMotor;
   private double pos = 0;
-  private final double TICKS_TO_ROHUNIT =
-      1.0 / 20_000; // fake unit, around 10 rotatoins or 20k ticks
+
 
   public Elevator() {
     leftMotor = new WPI_TalonFX(Constants.Elevator.LEFT_MOTOR);
@@ -48,7 +47,7 @@ public class Elevator extends SubsystemBase {
             Nat.N1(),
             sys,
             VecBuilder.fill(0.1, 0.1),
-            VecBuilder.fill(TICKS_TO_ROHUNIT),
+            VecBuilder.fill(Constants.Elevator.TICKS_TO_ROHUNIT),
             0.02); // use rmse for velo and accel
     LinearQuadraticRegulator<N2, N1, N1> controller =
         new LinearQuadraticRegulator<>(
@@ -78,7 +77,7 @@ public class Elevator extends SubsystemBase {
 
   @Override
   public void periodic() {
-    loop.setNextR(pos * TICKS_TO_ROHUNIT, 0);
+    loop.setNextR(pos * Constants.Elevator.TICKS_TO_ROHUNIT, 0);
     loop.correct(VecBuilder.fill(leftMotor.getSelectedSensorPosition()));
     loop.predict(0.02);
     elevatorMotors.setVoltage(

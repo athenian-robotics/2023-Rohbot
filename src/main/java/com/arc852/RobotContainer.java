@@ -54,7 +54,7 @@ public class RobotContainer {
 //  private final Arm arm = new Arm();
 //  private final Grabber grabber = new Grabber();
 
-  /** The container for the robot. Contains subsystems, OI devices, and commands. */
+  /* The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
     swerve.setDefaultCommand(
         swerve.drive(
