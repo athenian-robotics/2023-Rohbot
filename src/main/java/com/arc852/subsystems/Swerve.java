@@ -4,11 +4,7 @@ import static com.ctre.phoenix.motorcontrol.NeutralMode.Brake;
 
 import com.arc852.Constants;
 import com.arc852.SwerveModule;
-import com.arc852.autos.PPSwerveCommand;
 import com.ctre.phoenix.sensors.Pigeon2;
-import com.pathplanner.lib.PathConstraints;
-import com.pathplanner.lib.PathPlanner;
-import com.pathplanner.lib.PathPoint;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.controller.LTVDifferentialDriveController;
@@ -29,7 +25,6 @@ import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.*;
-import java.util.List;
 import java.util.Map;
 import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
@@ -208,18 +203,6 @@ public class Swerve extends SubsystemBase {
               false,
               true);
         });
-  }
-
-  public void setHeading(double theta) {
-    Pose2d pose = getPose();
-
-    new PPSwerveCommand(
-            this,
-            false,
-            PathPlanner.generatePath(
-                new PathConstraints(Constants.Swerve.maxSpeed, 5),
-                List.of(new PathPoint(pose.getTranslation(), Rotation2d.fromDegrees(theta)))))
-        .schedule();
   }
 
   /*

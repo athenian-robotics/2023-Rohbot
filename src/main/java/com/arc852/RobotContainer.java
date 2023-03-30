@@ -1,5 +1,7 @@
 package com.arc852;
 
+import static com.lib.controllers.FightStick.Button.*;
+
 import com.arc852.autos.*;
 import com.arc852.subsystems.*;
 import com.lib.controllers.FightStick;
@@ -8,15 +10,15 @@ import com.pathplanner.lib.PathConstraints;
 import edu.wpi.first.networktables.DoubleSubscriber;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.GenericHID;
+import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.event.EventLoop;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import io.github.oblarg.oblog.Loggable;
 import io.github.oblarg.oblog.annotations.Log;
-
-import static com.lib.controllers.FightStick.Button.*;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -47,6 +49,8 @@ public class RobotContainer implements Loggable {
   private static final JoystickButton b = new JoystickButton(fight, B.value);
   private static final JoystickButton x = new JoystickButton(fight, X.value);
   private static final JoystickButton y = new JoystickButton(fight, Y.value);
+  private static final JoystickButton bot =
+      new JoystickButton(stick, Joystick.ButtonType.kTop.value);
   /* Subsystems */
   private final Swerve swerve = new Swerve();
   private final Elevator elevator = new Elevator();
@@ -61,7 +65,7 @@ public class RobotContainer implements Loggable {
     autoChooser.setDefaultOption("mid", "middle");
 
     swerve.setDefaultCommand(
-        swerve.drive( () -> -stick.getX(), () -> -stick.getY(), () -> -stick.getZ(), () -> false));
+        swerve.drive(() -> -stick.getX(), () -> -stick.getY(), () -> -stick.getZ(), () -> false));
 
     //    elevator.setDefaultCommand(
     //        new InstantCommand(() -> elevator.set(slider.get()), elevator).repeatedly());
@@ -114,13 +118,11 @@ public class RobotContainer implements Loggable {
     //    new BooleanEvent(loop, fight::getAButton).ifHigh(grabber::open);
     //    //    new BooleanEvent(loop, fight::getBButton).ifHigh(grabber::close);
 
-
     a.onTrue(grabber.open());
     b.onTrue(grabber.close());
     x.whileTrue(grabber.spinForward());
     y.whileTrue(grabber.spinBackward());
-    
-
+    bot.onTrue(new InstantCommand(swerve::zeroGyro));
     //    a.onTrue(
     //        new InstantCommand(
     //            () -> {
@@ -144,6 +146,8 @@ public class RobotContainer implements Loggable {
    */
   public Command getAutonomousCommand() {
     // An ExampleCommand will run in autonomousz
-    return new PPSwerveCommand(swerve, true, autoChooser.getSelected(), new PathConstraints(1.5, 1.0)).andThen(swerve.autoBalance());
+    return new PPSwerveCommand(
+            swerve, true, autoChooser.getSelected(), new PathConstraints(1.5, 1.0))
+        .andThen(swerve.autoBalance());
   }
 }

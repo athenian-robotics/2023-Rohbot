@@ -77,7 +77,7 @@ public class Elevator extends SubsystemBase implements Loggable {
   }
 
   @Log
-  public double pos() {
+  public double positionPercent() {
     return leftMotor.getSelectedSensorPosition() / Constants.Elevator.MAX_HEIGHT;
   }
 

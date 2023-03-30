@@ -1,6 +1,5 @@
 package com.lib.controllers;
 
-import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.Joystick;
 
 public class Thrustmaster extends Joystick {

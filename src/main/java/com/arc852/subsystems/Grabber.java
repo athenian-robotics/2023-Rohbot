@@ -3,7 +3,6 @@ package com.arc852.subsystems;
 import com.arc852.Constants;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel;
-import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -49,13 +48,11 @@ public class Grabber extends SubsystemBase {
         });
   }
 
-
   public Command spinForward() {
-    return new StartEndCommand(() -> motor.set(.1), ()  -> motor.set(0), this);
+    return new StartEndCommand(() -> motor.set(.1), () -> motor.set(0), this);
   }
 
   public Command spinBackward() {
-      return new StartEndCommand(() -> motor.set(-.1), () -> motor.set(0), this);
+    return new StartEndCommand(() -> motor.set(-.1), () -> motor.set(0), this);
   }
-
 }

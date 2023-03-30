@@ -65,7 +65,6 @@ public class Arm extends SubsystemBase implements Loggable {
     return bottomMotor.getSelectedSensorPosition() * TICKS_TO_RAD;
   }
 
-
   @Override
   public void periodic() {
     loop.setNextR(pos, 0);
