@@ -36,10 +36,7 @@ public class exampleAuto extends SequentialCommandGroup {
 
     var thetaController =
         new ProfiledPIDController(
-            Constants.Auto.kPThetaController,
-            0,
-            0,
-            Constants.Auto.kThetaControllerConstraints);
+            Constants.Auto.kPThetaController, 0, 0, Constants.Auto.kThetaControllerConstraints);
     thetaController.enableContinuousInput(-Math.PI, Math.PI);
 
     SwerveControllerCommand swerveControllerCommand =

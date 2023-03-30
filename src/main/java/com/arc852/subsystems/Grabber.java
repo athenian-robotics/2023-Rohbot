@@ -4,54 +4,49 @@ import com.arc852.Constants;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel;
 import edu.wpi.first.math.controller.PIDController;
-import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
+import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class Grabber extends SubsystemBase {
   private final CANSparkMax motor;
-  private final DoubleSolenoid leftSolenoid;
-  private final DoubleSolenoid rightSolenoid;
+  private final Solenoid leftSolenoid;
   private final PIDController controller = new PIDController(0.1, 0, 0);
+  private final Solenoid rightSolenoid;
   private double set = 0;
 
   public Grabber() {
     controller.enableContinuousInput(-Math.PI, Math.PI);
     motor =
         new CANSparkMax(
-            Constants.Grabber.grabberSpinMotorID,
-            CANSparkMaxLowLevel.MotorType.kBrushless);
+            Constants.Grabber.grabberSpinMotorID, CANSparkMaxLowLevel.MotorType.kBrushless);
     leftSolenoid =
-        new DoubleSolenoid(
-            Constants.Grabber.PNEUMATIC_HUB,
-            PneumaticsModuleType.REVPH,
-            Constants.Grabber.LEFT_SOLENOID_FORWARD,
-            Constants.Grabber.LEFT_SOLENOID_REVERSE);
+        new Solenoid(0, PneumaticsModuleType.CTREPCM, Constants.Grabber.LEFT_SOLENOID_FORWARD);
+
     rightSolenoid =
-        new DoubleSolenoid(
-            Constants.Grabber.PNEUMATIC_HUB,
-            PneumaticsModuleType.REVPH,
-            Constants.Grabber.RIGHT_SOLENOID_FORWARD,
-            Constants.Grabber.RIGHT_SOLENOID_REVERSE);
-    leftSolenoid.set(DoubleSolenoid.Value.kForward);
-    rightSolenoid.set(DoubleSolenoid.Value.kForward);
+        new Solenoid(0, PneumaticsModuleType.CTREPCM, Constants.Grabber.RIGHT_SOLENOID_FORWARD);
+
+    leftSolenoid.set(true);
+    rightSolenoid.set(true);
   }
 
   public Command open() {
     return new InstantCommand(
         () -> {
-          leftSolenoid.set(DoubleSolenoid.Value.kForward);
-          rightSolenoid.set(DoubleSolenoid.Value.kForward);
+          System.out.println("a");
+          leftSolenoid.set(true);
+          rightSolenoid.set(false);
         });
   }
 
   public Command close() {
     return new InstantCommand(
         () -> {
-          leftSolenoid.set(DoubleSolenoid.Value.kReverse);
-          rightSolenoid.set(DoubleSolenoid.Value.kReverse);
+          System.out.println("b");
+          leftSolenoid.set(false);
+          rightSolenoid.set(true);
         });
   }
 

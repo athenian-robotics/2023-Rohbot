@@ -50,26 +50,23 @@ public class Swerve extends SubsystemBase {
 
   ProfiledPIDController thetaController =
       new ProfiledPIDController(
-          Constants.Auto.kPThetaController,
-          0,
-          0,
-          Constants.Auto.kThetaControllerConstraints);
+          Constants.Auto.kPThetaController, 0, 0, Constants.Auto.kThetaControllerConstraints);
 
   private final LTVDifferentialDriveController controller;
 
   public Swerve() {
     thetaController.enableContinuousInput(-Math.PI, Math.PI);
 
-    gyro = new Pigeon2(Constants.Swerve.pigeonID);
+    gyro = new Pigeon2(Constants.Swerve.pigeonID, "can");
     gyro.configFactoryDefault();
     zeroGyro();
 
     mSwerveMods =
         new SwerveModule[] {
-          new SwerveModule(0, Constants.Swerve.Mod0.constants),
-          new SwerveModule(1, Constants.Swerve.Mod1.constants),
-          new SwerveModule(2, Constants.Swerve.Mod2.constants),
-          new SwerveModule(3, Constants.Swerve.Mod3.constants)
+          new SwerveModule(0, Constants.Swerve.Mod0.constants, "can"),
+          new SwerveModule(1, Constants.Swerve.Mod1.constants, "can"),
+          new SwerveModule(2, Constants.Swerve.Mod2.constants, "can"),
+          new SwerveModule(3, Constants.Swerve.Mod3.constants, "can")
         };
 
     MotorControllerGroup left =

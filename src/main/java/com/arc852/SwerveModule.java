@@ -26,20 +26,20 @@ public class SwerveModule {
       new SimpleMotorFeedforward(
           Constants.Swerve.driveKS, Constants.Swerve.driveKV, Constants.Swerve.driveKA);
 
-  public SwerveModule(int moduleNumber, SwerveModuleConstants moduleConstants) {
+  public SwerveModule(int moduleNumber, SwerveModuleConstants moduleConstants, String canBusName) {
     this.moduleNumber = moduleNumber;
     this.angleOffset = moduleConstants.angleOffset;
 
     /* Angle Encoder Config */
-    angleEncoder = new CANCoder(moduleConstants.cancoderID);
+    angleEncoder = new CANCoder(moduleConstants.cancoderID, canBusName);
     configAngleEncoder();
 
     /* Angle Motor Config */
-    angleMotor = new WPI_TalonFX(moduleConstants.angleMotorID);
+    angleMotor = new WPI_TalonFX(moduleConstants.angleMotorID, canBusName);
     configAngleMotor();
 
     /* Drive Motor Config */
-    driveMotor = new WPI_TalonFX(moduleConstants.driveMotorID);
+    driveMotor = new WPI_TalonFX(moduleConstants.driveMotorID, canBusName);
     configDriveMotor();
 
     lastAngle = getState().angle;

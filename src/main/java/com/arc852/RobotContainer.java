@@ -1,15 +1,21 @@
 package com.arc852;
 
+import static com.lib.controllers.FightStick.Button.A;
+import static com.lib.controllers.FightStick.Button.B;
+
 import com.arc852.autos.*;
 import com.arc852.subsystems.*;
-import com.pathplanner.lib.PathConstraints;
-import com.pathplanner.lib.PathPlanner;
+import com.lib.controllers.FightStick;
+import com.lib.controllers.Thrustmaster;
+import edu.wpi.first.networktables.DoubleSubscriber;
+import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.GenericHID;
-import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.event.EventLoop;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
+import io.github.oblarg.oblog.Loggable;
+import io.github.oblarg.oblog.annotations.Log;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -17,51 +23,40 @@ import edu.wpi.first.wpilibj2.command.button.JoystickButton;
  * periodic methods (other than the scheduler calls). Instead, the structure of the robot (including
  * subsystems, commands, and button mappings) should be declared here.
  */
-public class RobotContainer {
+public class RobotContainer implements Loggable {
   /* Controllers */
-  public static XboxController driver = new XboxController(0);
-  private static Joystick leftJoystick = new Joystick(1);
-  private static Joystick rightJoystick = new Joystick(2);
+
+  private static Thrustmaster stick = new Thrustmaster(0);
 
   /* Drive Controls */
   private final int leftY = XboxController.Axis.kLeftY.value;
   private final int leftX = XboxController.Axis.kLeftX.value;
   private final int rightX = XboxController.Axis.kRightX.value;
+  private final DoubleSubscriber dial =
+      NetworkTableInstance.getDefault().getDoubleTopic("phidget/dial").subscribe(0.0);
+  private final DoubleSubscriber slider =
+      NetworkTableInstance.getDefault().getDoubleTopic("phidget/slider1").subscribe(0.0);
+  private final DoubleSubscriber slider2 =
+      NetworkTableInstance.getDefault().getDoubleTopic("phidget/slider2").subscribe(0.0);
+  private static final FightStick fight = new FightStick(1);
 
   /* Driver Buttons */
-  private final JoystickButton x =
-      new JoystickButton(driver, XboxController.Button.kX.value); // X button
-  private final JoystickButton RB =
-      new JoystickButton(driver, XboxController.Button.kRightBumper.value); // RB button
-  private final JoystickButton LB =
-      new JoystickButton(driver, XboxController.Button.kLeftBumper.value); // LB button
-  private final JoystickButton back =
-      new JoystickButton(driver, XboxController.Button.kBack.value); // Back button
-  private final JoystickButton b =
-      new JoystickButton(driver, XboxController.Button.kB.value); // B button
-  private final JoystickButton y =
-      new JoystickButton(driver, XboxController.Button.kY.value); // Y button
-  private final JoystickButton a =
-      new JoystickButton(driver, XboxController.Button.kA.value); // A button
-  private final JoystickButton leftTrigger =
-      new JoystickButton(driver, XboxController.Axis.kLeftTrigger.value); // LT button
-  private final JoystickButton rightTrigger =
-      new JoystickButton(driver, XboxController.Axis.kRightTrigger.value); // RT button
-
+  private static final JoystickButton a = new JoystickButton(fight, A.value);
+  private static final JoystickButton b = new JoystickButton(fight, B.value);
   /* Subsystems */
   private final Swerve swerve = new Swerve();
-//  private final Elevator elevator = new Elevator();
-//  private final Arm arm = new Arm();
-//  private final Grabber grabber = new Grabber();
+  private final Elevator elevator = new Elevator();
+  private final Arm arm = new Arm();
+  private final Grabber grabber = new Grabber();
 
   /* The container for the robot. Contains subsystems, OI devices, and commands. */
-  public RobotContainer() {
+  public RobotContainer(EventLoop loop) {
     swerve.setDefaultCommand(
-        swerve.drive(
-            () -> -driver.getRawAxis(leftY),
-            () -> -driver.getRawAxis(leftX),
-            () -> -driver.getRawAxis(rightX),
-            () -> false));
+        swerve.drive( () -> -stick.getX(), () -> -stick.getY(), () -> -stick.getZ(), () -> false));
+
+    //    elevator.setDefaultCommand(
+    //        new InstantCommand(() -> elevator.set(slider.get()), elevator).repeatedly());
+    //    arm.setDefaultCommand(new InstantCommand(() -> arm.set(slider2.get()), arm).repeatedly());
 
     //    swerve.setDefaultCommand(
     //        swerve.drive(
@@ -94,19 +89,45 @@ public class RobotContainer {
    */
   private void configureButtonBindings() {
     /* Driver Buttons */
-    x.onTrue(new InstantCommand(swerve::zeroGyro));
-    RB.onTrue(
-        new PPSwerveCommand(
-            swerve, true, PathPlanner.loadPath("Move Left", new PathConstraints(1, 1))));
-    b.onTrue(swerve.autoBalance());
+    //    x.onTrue(new InstantCommand(swerve::zeroGyro));
+    //    RB.onTrue(
+    //        new PPSwerveCommand(
+    //            swerve, true, PathPlanner.loadPath("Move Left", new PathConstraints(1, 1))));
+    //    b.onTrue(swerve.autoBalance());
+    //    a.onTrue(grabber.open());
+    //    y.onTrue(grabber.close());
     //    y.whileTrue(elevator.moveUp());
     //    a.whileTrue(elevator.moveDown());
     //    leftTrigger.whileTrue(arm.moveUp());
     //    rightTrigger.whileTrue(arm.moveDown());
     //    LB.onTrue(grabber.toggleGrabber());
     //    back.whileTrue(grabber.spinGrabber());
+    //    new BooleanEvent(loop, fight::getAButton).ifHigh(grabber::open);
+    //    //    new BooleanEvent(loop, fight::getBButton).ifHigh(grabber::close);
+
+
+    a.onTrue(grabber.open());
+    b.onTrue(grabber.close());
+
+
+    
+
+    //    a.onTrue(
+    //        new InstantCommand(
+    //            () -> {
+    //              System.out.println("a");
+    //            },
+    //            grabber));
+    //    b.onTrue(new InstantCommand(() -> System.out.println("b"), grabber));
+
+    arm.setDefaultCommand(arm.set(() -> slider2.get() * -Math.PI));
+    elevator.setDefaultCommand(elevator.set(slider));
   }
 
+  @Log
+  public double gert() {
+    return slider2.get();
+  }
   /**
    * Use this to pass the autonomous command to the main {@link Robot} class.
    *

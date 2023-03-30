@@ -139,36 +139,35 @@ public final class Constants {
   }
 
   public static final class Elevator { // TODO: MAX_HEIGHT must be tuned further
-    public static final double MIN_HEIGHT = -110.0;
-    public static final double MAX_HEIGHT = -50000.0;
+    public static final double MIN_HEIGHT = -12645 / 2048 / 6;
+    public static final double MAX_HEIGHT = -50000.0 / 2048 / 6;
 
     public static final int LEFT_MOTOR = 14;
     public static final int RIGHT_MOTOR = 15;
 
-    public static final double kV = 0.0;
-    public static final double kA = 0.0;
-    public static final double kS = 0.0;
-    public static double kG = 0;
+    public static final double kV = 2.3581;
+    public static final double kA = 0.072871;
+    public static final double kS = 0.41994;
+    public static double kG = .20;
 
-    public static final double gearRatio = 0; //TODO: fix this
+    public static final double gearRatio = 0; // TODO: fix this
 
-    public static final double TICKS_TO_ROHUNIT =
-            1.0 / 20_000; // fake unit, around 10 rotatoins or 20k ticks
+    public static final double TICKS_TO_METERS =
+        1.0 / 2048 / 6; // fake unit, around 10 rotatoins or 20k ticks
   }
 
   public static final class Arm { // TODO: Replace dummy values
     public static final int LEFT_MOTOR = 16;
-    public static final int RIGHT_MOTOR = 17;
 
-    public static final double kV = 0.0;
-    public static final double kA = 0.0;
-    public static final double kS = 0.0;
+    public static final double kV = 6.0142;
+    public static final double kA = 0.17752;
+    public static final double kS = 0.06012;
 
-    public static final double MIN_ANGLE = 0;
+    public static final double MIN_ANGLE = -Math.PI;
     public static final double MAX_ANGLE = 0;
-    public static double kG;
+    public static double kG = 0.21141;
 
-    public static final double gearRatio = (5.0 / 1.0);
+    public static final double gearRatio = 350;
   }
 
   public static final class LedConstants {
@@ -177,11 +176,11 @@ public final class Constants {
 
   public static final class Grabber {
     public static final int grabberSpinMotorID = 17;
-    public static final int PNEUMATIC_HUB = 18;
-    public static final int LEFT_SOLENOID_FORWARD = 1;
-    public static final int LEFT_SOLENOID_REVERSE = 2;
-    public static final int RIGHT_SOLENOID_FORWARD = 3;
-    public static final int RIGHT_SOLENOID_REVERSE = 4;
+    public static final int PNEUMATIC_HUB = 0;
+    public static final int LEFT_SOLENOID_FORWARD = 6;
+    public static final int LEFT_SOLENOID_REVERSE = 6;
+    public static final int RIGHT_SOLENOID_FORWARD = 7;
+    public static final int RIGHT_SOLENOID_REVERSE = 7;
 
     public static final double SPIN_SPEED = 0.1;
   }
@@ -194,9 +193,9 @@ public final class Constants {
     public static final double kMaxAngularSpeedRadiansPerSecond = Math.PI;
     public static final double kMaxAngularSpeedRadiansPerSecondSquared = Math.PI;
 
-    public static final double kPXController = 1;
-    public static final double kPYController = 1;
-    public static final double kPThetaController = 1;
+    public static final double kPXController = 3;
+    public static final double kPYController = 3;
+    public static final double kPThetaController = 2.5;
 
     /* Constraint for the motion profilied robot angle controller */
     public static final TrapezoidProfile.Constraints kThetaControllerConstraints =
