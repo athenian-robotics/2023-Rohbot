@@ -29,6 +29,7 @@ public class Superstructure {
   /**
    * set the whole manipulator to a position
    *
+   * arm is rad elev is percent
    * @return command
    */
   private Command setPos(double arm, double elevator) {

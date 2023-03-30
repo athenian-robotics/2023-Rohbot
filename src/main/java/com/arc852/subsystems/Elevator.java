@@ -77,12 +77,8 @@ public class Elevator extends SubsystemBase implements Loggable {
   }
 
   @Log
-  public double get() {
-    return leftMotor.getSelectedSensorPosition();
-  }
-
-  public WPI_TalonFX getLeftMotor() {
-    return leftMotor;
+  public double pos() {
+    return leftMotor.getSelectedSensorPosition() / Constants.Elevator.MAX_HEIGHT;
   }
 
   @Override

@@ -1,21 +1,22 @@
 package com.arc852;
 
-import static com.lib.controllers.FightStick.Button.A;
-import static com.lib.controllers.FightStick.Button.B;
-
 import com.arc852.autos.*;
 import com.arc852.subsystems.*;
 import com.lib.controllers.FightStick;
 import com.lib.controllers.Thrustmaster;
+import com.pathplanner.lib.PathConstraints;
 import edu.wpi.first.networktables.DoubleSubscriber;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.event.EventLoop;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import io.github.oblarg.oblog.Loggable;
 import io.github.oblarg.oblog.annotations.Log;
+
+import static com.lib.controllers.FightStick.Button.*;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -39,10 +40,13 @@ public class RobotContainer implements Loggable {
   private final DoubleSubscriber slider2 =
       NetworkTableInstance.getDefault().getDoubleTopic("phidget/slider2").subscribe(0.0);
   private static final FightStick fight = new FightStick(1);
+  private final SendableChooser<String> autoChooser = new SendableChooser<>();
 
   /* Driver Buttons */
   private static final JoystickButton a = new JoystickButton(fight, A.value);
   private static final JoystickButton b = new JoystickButton(fight, B.value);
+  private static final JoystickButton x = new JoystickButton(fight, X.value);
+  private static final JoystickButton y = new JoystickButton(fight, Y.value);
   /* Subsystems */
   private final Swerve swerve = new Swerve();
   private final Elevator elevator = new Elevator();
@@ -51,6 +55,11 @@ public class RobotContainer implements Loggable {
 
   /* The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer(EventLoop loop) {
+    autoChooser.addOption("left", "left corner");
+    autoChooser.addOption("mid", "middle");
+    autoChooser.addOption("right", "right corner");
+    autoChooser.setDefaultOption("mid", "middle");
+
     swerve.setDefaultCommand(
         swerve.drive( () -> -stick.getX(), () -> -stick.getY(), () -> -stick.getZ(), () -> false));
 
@@ -108,8 +117,8 @@ public class RobotContainer implements Loggable {
 
     a.onTrue(grabber.open());
     b.onTrue(grabber.close());
-
-
+    x.whileTrue(grabber.spinForward());
+    y.whileTrue(grabber.spinBackward());
     
 
     //    a.onTrue(
@@ -120,7 +129,7 @@ public class RobotContainer implements Loggable {
     //            grabber));
     //    b.onTrue(new InstantCommand(() -> System.out.println("b"), grabber));
 
-    arm.setDefaultCommand(arm.set(() -> slider2.get() * -Math.PI));
+    arm.setDefaultCommand(arm.set(() -> (1 - slider2.get()) * -Math.PI));
     elevator.setDefaultCommand(elevator.set(slider));
   }
 
@@ -134,7 +143,7 @@ public class RobotContainer implements Loggable {
    * @return the command to run in autonomous
    */
   public Command getAutonomousCommand() {
-    // An ExampleCommand will run in autonomous
-    return new exampleAuto(swerve);
+    // An ExampleCommand will run in autonomousz
+    return new PPSwerveCommand(swerve, true, autoChooser.getSelected(), new PathConstraints(1.5, 1.0)).andThen(swerve.autoBalance());
   }
 }

@@ -4,6 +4,8 @@ import static com.arc852.Constants.Swerve.swerveKinematics;
 
 import com.arc852.Constants;
 import com.arc852.subsystems.Swerve;
+import com.pathplanner.lib.PathConstraints;
+import com.pathplanner.lib.PathPlanner;
 import com.pathplanner.lib.PathPlannerTrajectory;
 import com.pathplanner.lib.commands.PPSwerveControllerCommand;
 import edu.wpi.first.math.controller.PIDController;
@@ -11,17 +13,17 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 
 public class PPSwerveCommand extends SequentialCommandGroup {
-  public PPSwerveCommand(Swerve drivetrain, boolean isFirstPath, PathPlannerTrajectory traj) {
+  public PPSwerveCommand(Swerve drivetrain, boolean isFirstPath, String name, PathConstraints constraints) {
     super(
         new InstantCommand(
             () -> {
               // Reset odometry for the first path you run during auto
               if (isFirstPath) {
-                drivetrain.resetOdometry(traj.getInitialHolonomicPose());
+                drivetrain.resetOdometry(PathPlanner.loadPath("name", constraints).getInitialHolonomicPose());
               }
             }),
         new PPSwerveControllerCommand(
-            traj,
+                PathPlanner.loadPath(name, constraints),
             drivetrain::getPose, // Pose supplier
             swerveKinematics, // SwerveDriveKinematics
             new PIDController(
