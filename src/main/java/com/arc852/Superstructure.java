@@ -6,6 +6,7 @@ import com.arc852.subsystems.Grabber;
 import com.arc852.subsystems.Led;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 
 public class Superstructure {
   private final Arm arm;
@@ -34,7 +35,7 @@ public class Superstructure {
    * @return command
    */
   private Command setPos(double arm, double elevator) {
-    return new ParallelCommandGroup(this.arm.set(() -> arm), this.elevator.set(() -> elevator));
+    return new ParallelCommandGroup(this.arm.set(() -> arm), new WaitCommand(0.75).andThen(this.elevator.set(() -> elevator))).repeatedly().until(() -> this.arm.atSetpoint() && this.elevator.atSetpoint());
   }
 
   public Command startingPos() {

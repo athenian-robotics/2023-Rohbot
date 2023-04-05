@@ -21,6 +21,10 @@ import io.github.oblarg.oblog.Loggable;
 import io.github.oblarg.oblog.annotations.Log;
 import java.util.function.DoubleSupplier;
 
+import static com.arc852.Constants.Elevator.*;
+import static com.arc852.Constants.Elevator.MAX_HEIGHT;
+import static com.arc852.Constants.Elevator.TICKS_TO_METERS;
+
 public class Elevator extends SubsystemBase implements Loggable {
   private final MotorControllerGroup elevatorMotors;
   private final GenericEntry position;
@@ -32,8 +36,8 @@ public class Elevator extends SubsystemBase implements Loggable {
   SlewRateLimiter limiter = new SlewRateLimiter(2.8); // m/s
 
   public Elevator() {
-    leftMotor = new WPI_TalonFX(Constants.Elevator.LEFT_MOTOR);
-    rightMotor = new WPI_TalonFX(Constants.Elevator.RIGHT_MOTOR);
+    leftMotor = new WPI_TalonFX(LEFT_MOTOR);
+    rightMotor = new WPI_TalonFX(RIGHT_MOTOR);
     leftMotor.setInverted(false);
     rightMotor.setInverted(false);
     leftMotor.setNeutralMode(NeutralMode.Brake);
@@ -43,7 +47,7 @@ public class Elevator extends SubsystemBase implements Loggable {
     position = tab.add("Elevator Position", leftMotor.getSelectedSensorPosition()).getEntry();
     velocity = tab.add("Elevator Speed", leftMotor.getSelectedSensorVelocity()).getEntry();
 
-    var sys = LinearSystemId.identifyPositionSystem(Constants.Elevator.kV, Constants.Elevator.kA);
+    var sys = LinearSystemId.identifyPositionSystem(kV, kA);
 
     KalmanFilter<N2, N1, N1> filter =
         new KalmanFilter<>(
@@ -51,7 +55,7 @@ public class Elevator extends SubsystemBase implements Loggable {
             Nat.N1(),
             sys,
             VecBuilder.fill(0.061, 0.061),
-            VecBuilder.fill(Constants.Elevator.TICKS_TO_METERS),
+            VecBuilder.fill(TICKS_TO_METERS),
             0.02); // use rmse for velo and accel
     LinearQuadraticRegulator<N2, N1, N1> controller =
         new LinearQuadraticRegulator<>(
@@ -74,14 +78,19 @@ public class Elevator extends SubsystemBase implements Loggable {
         () ->
             pos =
                 percent.getAsDouble()
-                        * (Constants.Elevator.MAX_HEIGHT - Constants.Elevator.MIN_HEIGHT)
-                    + Constants.Elevator.MIN_HEIGHT,
+                        * (MAX_HEIGHT - MIN_HEIGHT)
+                    + MIN_HEIGHT,
         this);
   }
 
   @Log
+  public boolean atSetpoint() {
+    return Math.abs(pos - leftMotor.getSelectedSensorPosition() * TICKS_TO_METERS) < 0.15;
+  }
+
+  @Log
   public double positionPercent() {
-    return leftMotor.getSelectedSensorPosition() / Constants.Elevator.MAX_HEIGHT;
+    return leftMotor.getSelectedSensorPosition() * TICKS_TO_METERS / MAX_HEIGHT;
   }
 
   @Override
@@ -89,10 +98,10 @@ public class Elevator extends SubsystemBase implements Loggable {
     loop.setNextR(limiter.calculate(pos), 0);
     loop.correct(
         VecBuilder.fill(
-            leftMotor.getSelectedSensorPosition() * Constants.Elevator.TICKS_TO_METERS));
+            leftMotor.getSelectedSensorPosition() * TICKS_TO_METERS));
     loop.predict(0.02);
     elevatorMotors.setVoltage(
-        loop.getU(0) + Constants.Elevator.kS * loop.getNextR(1) + Constants.Elevator.kG);
+        loop.getU(0) + kS * loop.getNextR(1) + kG);
 
     position.setDouble(leftMotor.getSelectedSensorPosition());
     velocity.setDouble(leftMotor.getSelectedSensorVelocity());

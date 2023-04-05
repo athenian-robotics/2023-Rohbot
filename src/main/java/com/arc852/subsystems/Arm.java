@@ -46,10 +46,7 @@ public class Arm extends SubsystemBase implements Loggable {
     loop = new LinearSystemLoop<>(sys, controller, filter, 12, 0.02);
   }
 
-  @Log
-  public double getPuse() {
-    return bottomMotor.getSelectedSensorPosition();
-  }
+
 
   /**
    * Sets the arm to
@@ -66,6 +63,12 @@ public class Arm extends SubsystemBase implements Loggable {
         this);
   }
 
+  @Log
+  public boolean atSetpoint() {
+    return Math.abs(pos() - pos) < 0.01;
+  }
+
+  @Log
   public double pos() {
     return bottomMotor.getSelectedSensorPosition() * TICKS_TO_RAD;
   }
