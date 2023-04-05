@@ -56,7 +56,6 @@ public class RobotContainer implements Loggable {
   private static final JoystickButton bottom = new JoystickButton(stick, BOTTOM.val);
   private static final JoystickButton l3 = new JoystickButton(stick, LEFT_INSIDE_BOTTOM.val);
 
-
   /* Subsystems */
   private final Swerve swerve = new Swerve();
   private final Elevator elevator = new Elevator();
@@ -137,7 +136,6 @@ public class RobotContainer implements Loggable {
     trigger.onTrue(grabber.close());
     bottom.onTrue(grabber.open());
     l3.onTrue(swerve.lockWheels());
-
 
     //    a.onTrue(
     //        new InstantCommand(

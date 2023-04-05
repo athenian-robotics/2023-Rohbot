@@ -7,6 +7,7 @@ import edu.wpi.first.math.Nat;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.controller.LinearQuadraticRegulator;
 import edu.wpi.first.math.estimator.KalmanFilter;
+import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N2;
 import edu.wpi.first.math.system.LinearSystemLoop;
@@ -28,6 +29,7 @@ public class Elevator extends SubsystemBase implements Loggable {
   private final WPI_TalonFX leftMotor;
   private final WPI_TalonFX rightMotor;
   @Log private double pos = 0;
+  SlewRateLimiter limiter = new SlewRateLimiter(2.8); // m/s
 
   public Elevator() {
     leftMotor = new WPI_TalonFX(Constants.Elevator.LEFT_MOTOR);
@@ -54,7 +56,7 @@ public class Elevator extends SubsystemBase implements Loggable {
     LinearQuadraticRegulator<N2, N1, N1> controller =
         new LinearQuadraticRegulator<>(
             sys,
-            VecBuilder.fill(0.1, 0.095),
+            VecBuilder.fill(0.1, 0.1),
             VecBuilder.fill(8),
             0.02); // error tolerance for pos, velo and then control effort
 
@@ -84,7 +86,7 @@ public class Elevator extends SubsystemBase implements Loggable {
 
   @Override
   public void periodic() {
-    loop.setNextR(pos, 0);
+    loop.setNextR(limiter.calculate(pos), 0);
     loop.correct(
         VecBuilder.fill(
             leftMotor.getSelectedSensorPosition() * Constants.Elevator.TICKS_TO_METERS));
