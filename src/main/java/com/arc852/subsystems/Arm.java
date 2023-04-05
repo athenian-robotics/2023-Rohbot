@@ -18,7 +18,7 @@ import java.util.function.DoubleSupplier;
 
 public class Arm extends SubsystemBase implements Loggable {
   private final LinearSystemLoop<N2, N1, N1> loop;
-  @Log private double pos = 0;
+  private double pos = 0;
   private final WPI_TalonFX bottomMotor;
   private final double TICKS_TO_RAD =
       2
