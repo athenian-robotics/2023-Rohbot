@@ -46,8 +46,6 @@ public class Arm extends SubsystemBase implements Loggable {
     loop = new LinearSystemLoop<>(sys, controller, filter, 12, 0.02);
   }
 
-
-
   /**
    * Sets the arm to
    *

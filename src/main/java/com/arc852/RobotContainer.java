@@ -30,7 +30,7 @@ import io.github.oblarg.oblog.annotations.Log;
 public class RobotContainer implements Loggable {
   /* Controllers */
 
-  private static Thrustmaster stick = new Thrustmaster(0);
+  private static final Thrustmaster stick = new Thrustmaster(0);
 
   /* Drive Controls */
   private final int leftY = XboxController.Axis.kLeftY.value;
@@ -112,21 +112,6 @@ public class RobotContainer implements Loggable {
    */
   private void configureButtonBindings() {
     /* Driver Buttons */
-    //    x.onTrue(new InstantCommand(swerve::zeroGyro));
-    //    RB.onTrue(
-    //        new PPSwerveCommand(
-    //            swerve, true, PathPlanner.loadPath("Move Left", new PathConstraints(1, 1))));
-    //    b.onTrue(swerve.autoBalance());
-    //    a.onTrue(grabber.open());
-    //    y.onTrue(grabber.close());
-    //    y.whileTrue(elevator.moveUp());
-    //    a.whileTrue(elevator.moveDown());
-    //    leftTrigger.whileTrue(arm.moveUp());
-    //    rightTrigger.whileTrue(arm.moveDown());
-    //    LB.onTrue(grabber.toggleGrabber());
-    //    back.whileTrue(grabber.spinGrabber());
-    //    new BooleanEvent(loop, fight::getAButton).ifHigh(grabber::open);
-    //    //    new BooleanEvent(loop, fight::getBButton).ifHigh(grabber::close);
 
     a.onTrue(grabber.close());
     b.onTrue(grabber.open());
@@ -136,14 +121,6 @@ public class RobotContainer implements Loggable {
     trigger.onTrue(grabber.close());
     bottom.onTrue(grabber.open());
     l3.onTrue(swerve.lockWheels());
-
-    //    a.onTrue(
-    //        new InstantCommand(
-    //            () -> {
-    //              System.out.println("a");
-    //            },
-    //            grabber));
-    //    b.onTrue(new InstantCommand(() -> System.out.println("b"), grabber));
 
     arm.setDefaultCommand(arm.set(() -> (1 - slider2.get()) * -Math.PI));
     elevator.setDefaultCommand(elevator.set(slider));

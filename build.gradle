@@ -1,3 +1,5 @@
+import edu.wpi.first.gradlerio.GradleRIOPlugin
+
 plugins {
     id "java"
     id "edu.wpi.first.GradleRIO" version "2023.4.3"
@@ -110,7 +112,7 @@ jar {
     manifest {
         attributes 'Multi-Release': 'true'
     }
-    manifest edu.wpi.first.gradlerio.GradleRIOPlugin.javaManifest(ROBOT_MAIN_CLASS)
+    manifest GradleRIOPlugin.javaManifest(ROBOT_MAIN_CLASS)
     duplicatesStrategy = DuplicatesStrategy.INCLUDE
 }
 
@@ -170,6 +172,6 @@ wpi.java.configureExecutableTasks(jar)
 wpi.java.configureTestTasks(test)
 
 // Configure string concat to always inline compile
-tasks.withType(JavaCompile) {
+tasks.withType(JavaCompile).configureEach {
     options.compilerArgs.add '-XDstringConcat=inline'
 }

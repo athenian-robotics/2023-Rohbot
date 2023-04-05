@@ -1,6 +1,7 @@
 package com.arc852.subsystems;
 
-import com.arc852.Constants;
+import static com.arc852.Constants.Elevator.*;
+
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 import edu.wpi.first.math.Nat;
@@ -16,14 +17,12 @@ import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.wpilibj.motorcontrol.MotorControllerGroup;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
-import edu.wpi.first.wpilibj2.command.*;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.RunCommand;
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import io.github.oblarg.oblog.Loggable;
 import io.github.oblarg.oblog.annotations.Log;
 import java.util.function.DoubleSupplier;
-
-import static com.arc852.Constants.Elevator.*;
-import static com.arc852.Constants.Elevator.MAX_HEIGHT;
-import static com.arc852.Constants.Elevator.TICKS_TO_METERS;
 
 public class Elevator extends SubsystemBase implements Loggable {
   private final MotorControllerGroup elevatorMotors;
@@ -31,13 +30,12 @@ public class Elevator extends SubsystemBase implements Loggable {
   private final GenericEntry velocity;
   private final LinearSystemLoop<N2, N1, N1> loop;
   private final WPI_TalonFX leftMotor;
-  private final WPI_TalonFX rightMotor;
   @Log private double pos = 0;
-  SlewRateLimiter limiter = new SlewRateLimiter(2.8); // m/s
+  private final SlewRateLimiter limiter = new SlewRateLimiter(2.8); // m/s
 
   public Elevator() {
     leftMotor = new WPI_TalonFX(LEFT_MOTOR);
-    rightMotor = new WPI_TalonFX(RIGHT_MOTOR);
+    WPI_TalonFX rightMotor = new WPI_TalonFX(RIGHT_MOTOR);
     leftMotor.setInverted(false);
     rightMotor.setInverted(false);
     leftMotor.setNeutralMode(NeutralMode.Brake);
@@ -75,12 +73,7 @@ public class Elevator extends SubsystemBase implements Loggable {
    */
   public Command set(DoubleSupplier percent) {
     return new RunCommand(
-        () ->
-            pos =
-                percent.getAsDouble()
-                        * (MAX_HEIGHT - MIN_HEIGHT)
-                    + MIN_HEIGHT,
-        this);
+        () -> pos = percent.getAsDouble() * (MAX_HEIGHT - MIN_HEIGHT) + MIN_HEIGHT, this);
   }
 
   @Log
@@ -96,12 +89,9 @@ public class Elevator extends SubsystemBase implements Loggable {
   @Override
   public void periodic() {
     loop.setNextR(limiter.calculate(pos), 0);
-    loop.correct(
-        VecBuilder.fill(
-            leftMotor.getSelectedSensorPosition() * TICKS_TO_METERS));
+    loop.correct(VecBuilder.fill(leftMotor.getSelectedSensorPosition() * TICKS_TO_METERS));
     loop.predict(0.02);
-    elevatorMotors.setVoltage(
-        loop.getU(0) + kS * loop.getNextR(1) + kG);
+    elevatorMotors.setVoltage(loop.getU(0) + kS * loop.getNextR(1) + kG);
 
     position.setDouble(leftMotor.getSelectedSensorPosition());
     velocity.setDouble(leftMotor.getSelectedSensorVelocity());

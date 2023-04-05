@@ -12,7 +12,7 @@ public class Thrustmaster extends Joystick {
     super(port);
   }
 
-  public static enum Button {
+  public enum Button {
     TRIGGER(1),
     BOTTOM(2),
     LEFT(3),
@@ -32,7 +32,7 @@ public class Thrustmaster extends Joystick {
 
     public final int val;
 
-    private Button(int i) {
+    Button(int i) {
       val = i;
     }
   }

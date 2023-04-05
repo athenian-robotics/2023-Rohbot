@@ -29,20 +29,19 @@ import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
 
 public class Swerve extends SubsystemBase implements Loggable {
-  public SwerveDriveOdometry swerveOdometry;
-  public SwerveModule[] swerveModules;
-  public Pigeon2 gyro;
+  public final SwerveDriveOdometry swerveOdometry;
+  public final SwerveModule[] swerveModules;
+  public final Pigeon2 gyro;
   private final PIDController pid;
   private final double kP = 0.018;
-  private final double kI = 0;
   private final double kD = 0.001;
   private final GenericEntry pitchEntry;
   private final GenericEntry pEffect;
   private final GenericEntry dEffect;
 
-  ProfiledPIDController thetaController =
+  private final ProfiledPIDController thetaController =
       new ProfiledPIDController(
-          Constants.Auto.kPThetaController, 0, 0, Constants.Auto.kThetaControllerConstraints);
+          Constants.Auto.P_THETA_CONTROLLER, 0, 0, Constants.Auto.THETA_CONTROLLER_CONSTRAINTS);
 
   public Swerve() {
     thetaController.enableContinuousInput(-Math.PI, Math.PI);
@@ -71,6 +70,7 @@ public class Swerve extends SubsystemBase implements Loggable {
     swerveModules[2].getAngleMotor().setNeutralMode(Brake);
     swerveModules[3].getAngleMotor().setNeutralMode(Brake);
 
+    double kI = 0;
     this.pid = new PIDController(kP, kI, kD);
     ShuffleboardTab tab = Shuffleboard.getTab("Swerve");
     tab.add("PID", pid);

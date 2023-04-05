@@ -14,15 +14,15 @@ import edu.wpi.first.math.kinematics.SwerveModuleState;
 import lombok.Getter;
 
 public class SwerveModule {
-  public int moduleNumber;
-  private Rotation2d angleOffset;
+  public final int moduleNumber;
+  private final Rotation2d angleOffset;
   private Rotation2d lastAngle;
 
-  @Getter private WPI_TalonFX angleMotor;
-  @Getter private WPI_TalonFX driveMotor;
-  private CANCoder angleEncoder;
+  @Getter private final WPI_TalonFX angleMotor;
+  @Getter private final WPI_TalonFX driveMotor;
+  private final CANCoder angleEncoder;
 
-  SimpleMotorFeedforward feedforward =
+  private final SimpleMotorFeedforward feedforward =
       new SimpleMotorFeedforward(
           Constants.Swerve.driveKS, Constants.Swerve.driveKV, Constants.Swerve.driveKA);
 
@@ -137,9 +137,5 @@ public class SwerveModule {
             Constants.Swerve.wheelCircumference,
             Constants.Swerve.driveGearRatio),
         getAngle());
-  }
-
-  public double getSpeed() {
-    return 0;
   }
 }

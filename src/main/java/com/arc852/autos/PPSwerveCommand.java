@@ -28,16 +28,16 @@ public class PPSwerveCommand extends SequentialCommandGroup {
             drivetrain::getPose, // Pose supplier
             swerveKinematics, // SwerveDriveKinematics
             new PIDController(
-                Constants.Auto.kPXController,
+                Constants.Auto.PX_CONTROLLER,
                 0,
                 0), // X controller. Tune these values for your robot. Leaving them 0 will only use
             // feedforwards.
             new PIDController(
-                Constants.Auto.kPYController,
+                Constants.Auto.PY_CONTROLLER,
                 0,
                 0), // Y controller (usually the same values as X controller)
             new PIDController(
-                Constants.Auto.kPThetaController,
+                Constants.Auto.P_THETA_CONTROLLER,
                 0,
                 0), // Rotation controller. Tune these values for your robot. Leaving them 0 will
             // only use feedforwards.

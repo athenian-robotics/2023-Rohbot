@@ -14,17 +14,14 @@ public class Grabber extends SubsystemBase {
   private final CANSparkMax motor;
   private final Solenoid leftSolenoid;
   private final Solenoid rightSolenoid;
-  private double set = 0;
 
   public Grabber() {
     motor =
         new CANSparkMax(
             Constants.Grabber.grabberSpinMotorID, CANSparkMaxLowLevel.MotorType.kBrushless);
-    leftSolenoid =
-        new Solenoid(0, PneumaticsModuleType.CTREPCM, Constants.Grabber.LEFT_SOLENOID_FORWARD);
+    leftSolenoid = new Solenoid(0, PneumaticsModuleType.CTREPCM, Constants.Grabber.SOLENOID_LEFT);
 
-    rightSolenoid =
-        new Solenoid(0, PneumaticsModuleType.CTREPCM, Constants.Grabber.RIGHT_SOLENOID_FORWARD);
+    rightSolenoid = new Solenoid(0, PneumaticsModuleType.CTREPCM, Constants.Grabber.SOLENOID_RIGHT);
 
     leftSolenoid.set(true);
     rightSolenoid.set(false);

@@ -15,9 +15,7 @@ public final class Constants {
 
   public static double kv = 0.16037;
   public static double ka = 0.20799;
-  public static double kvRot = 0.00001;
-  public static double kaRot = 0.00001;
-  public static double trackWidthMeters = Units.inchesToMeters(17.75);
+  public static double trackWidthMeters = Units.inchesToMeters(30);
 
   public static final class Swerve {
     public static final int pigeonID = 13;
@@ -148,9 +146,7 @@ public final class Constants {
     public static final double kV = 2.3581;
     public static final double kA = 0.072871;
     public static final double kS = 0.41994;
-    public static double kG = .20;
-
-    public static final double gearRatio = 0; // TODO: fix this
+    public static final double kG = .20;
 
     public static final double TICKS_TO_METERS =
         1.0 / 2048 / 6; // fake unit, around 10 rotatoins or 20k ticks
@@ -165,7 +161,7 @@ public final class Constants {
 
     public static final double MIN_ANGLE = -Math.PI;
     public static final double MAX_ANGLE = 0;
-    public static double kG = 0.21141;
+    public static final double kG = 0.21141;
 
     public static final double gearRatio = 350;
   }
@@ -176,30 +172,25 @@ public final class Constants {
 
   public static final class Grabber {
     public static final int grabberSpinMotorID = 17;
-    public static final int PNEUMATIC_HUB = 0;
-    public static final int LEFT_SOLENOID_FORWARD = 6;
-    public static final int LEFT_SOLENOID_REVERSE = 6;
-    public static final int RIGHT_SOLENOID_FORWARD = 7;
-    public static final int RIGHT_SOLENOID_REVERSE = 7;
-
-    public static final double SPIN_SPEED = 0.1;
+    public static final int SOLENOID_LEFT = 6;
+    public static final int SOLENOID_RIGHT = 7;
   }
 
   public static final
   class Auto { // TODO: The below constants are used in the example auto, and must be tuned
     // to specific robot
-    public static final double kMaxSpeedMetersPerSecond = 3;
-    public static final double kMaxAccelerationMetersPerSecondSquared = 3;
-    public static final double kMaxAngularSpeedRadiansPerSecond = Math.PI;
-    public static final double kMaxAngularSpeedRadiansPerSecondSquared = Math.PI;
+    public static final double MAX_SPEED_METERS_PER_SECOND = 3;
+    public static final double MAX_ACCELERATION_METERS_PER_SECOND_SQUARED = 3;
+    public static final double MAX_ANGULAR_SPEED_RADIANS_PER_SECOND = Math.PI;
+    public static final double MAX_ANGULAR_SPEED_RADIANS_PER_SECOND_SQUARED = Math.PI;
 
-    public static final double kPXController = 0;
-    public static final double kPYController = 0;
-    public static final double kPThetaController = 0;
+    public static final double PX_CONTROLLER = 0;
+    public static final double PY_CONTROLLER = 0;
+    public static final double P_THETA_CONTROLLER = 0;
 
     /* Constraint for the motion profilied robot angle controller */
-    public static final TrapezoidProfile.Constraints kThetaControllerConstraints =
+    public static final TrapezoidProfile.Constraints THETA_CONTROLLER_CONSTRAINTS =
         new TrapezoidProfile.Constraints(
-            kMaxAngularSpeedRadiansPerSecond, kMaxAngularSpeedRadiansPerSecondSquared);
+            MAX_ANGULAR_SPEED_RADIANS_PER_SECOND, MAX_ANGULAR_SPEED_RADIANS_PER_SECOND_SQUARED);
   }
 }
