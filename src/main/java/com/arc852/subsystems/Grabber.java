@@ -27,24 +27,22 @@ public class Grabber extends SubsystemBase {
         new Solenoid(0, PneumaticsModuleType.CTREPCM, Constants.Grabber.RIGHT_SOLENOID_FORWARD);
 
     leftSolenoid.set(true);
-    rightSolenoid.set(true);
+    rightSolenoid.set(false);
   }
 
   public Command open() {
     return new InstantCommand(
         () -> {
-          System.out.println("a");
-          leftSolenoid.set(true);
-          rightSolenoid.set(false);
+          leftSolenoid.set(false);
+          rightSolenoid.set(true);
         });
   }
 
   public Command close() {
     return new InstantCommand(
         () -> {
-          System.out.println("b");
-          leftSolenoid.set(false);
-          rightSolenoid.set(true);
+          leftSolenoid.set(true);
+          rightSolenoid.set(false);
         });
   }
 

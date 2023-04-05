@@ -138,4 +138,8 @@ public class SwerveModule {
             Constants.Swerve.driveGearRatio),
         getAngle());
   }
+
+  public double getSpeed() {
+    return 0;
+  }
 }

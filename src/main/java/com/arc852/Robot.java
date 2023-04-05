@@ -4,6 +4,7 @@
 
 package com.arc852;
 
+import edu.wpi.first.net.PortForwarder;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.event.EventLoop;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -35,6 +36,10 @@ public class Robot extends TimedRobot {
     m_robotContainer = new RobotContainer(loop);
 
     Logger.configureLoggingAndConfig(this, false);
+
+    for (int port = 5800; port < 5806; port++) {
+      PortForwarder.add(port, "limelight-arc.local", port);
+    }
   }
 
   /**

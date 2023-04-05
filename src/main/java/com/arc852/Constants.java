@@ -74,9 +74,9 @@ public final class Constants {
     public static final double angleKF = chosenModule.angleKF;
 
     /* Drive Motor PID Values */
-    public static final double driveKP = 0.6; // TODO: This must be tuned to specific robot
+    public static final double driveKP = 0.1; // TODO: This must be tuned to specific robot
     public static final double driveKI = 0.0;
-    public static final double driveKD = 12.0;
+    public static final double driveKD = 0;
     public static final double driveKF = 0.0;
 
     /* Drive Motor Characterization Values
@@ -89,8 +89,7 @@ public final class Constants {
     /** Meters per Second */
     public static final double maxSpeed = 4.5; // TODO: This must be tuned to specific robot
     /** Radians per Second */
-    public static final double maxAngularVelocity =
-        11.5; // TODO: This must be tuned to specific robot
+    public static final double maxAngularVelocity = 3; // TODO: This must be tuned to specific robot
 
     /* Neutral Modes */
     public static final NeutralMode angleNeutralMode = NeutralMode.Coast;
@@ -139,10 +138,11 @@ public final class Constants {
   }
 
   public static final class Elevator { // TODO: MAX_HEIGHT must be tuned further
-    public static final double MIN_HEIGHT = -12645 / 2048 / 6;
-    public static final double MAX_HEIGHT = -50000.0 / 2048 / 6;
+    public static final double MIN_HEIGHT = -6000.0 / 2048 / 6;
+    public static final double MAX_HEIGHT = -60000.0 / 2048 / 6;
 
     public static final int LEFT_MOTOR = 14;
+
     public static final int RIGHT_MOTOR = 15;
 
     public static final double kV = 2.3581;
@@ -193,9 +193,9 @@ public final class Constants {
     public static final double kMaxAngularSpeedRadiansPerSecond = Math.PI;
     public static final double kMaxAngularSpeedRadiansPerSecondSquared = Math.PI;
 
-    public static final double kPXController = 3;
-    public static final double kPYController = 3;
-    public static final double kPThetaController = 2.5;
+    public static final double kPXController = 0;
+    public static final double kPYController = 0;
+    public static final double kPThetaController = 0;
 
     /* Constraint for the motion profilied robot angle controller */
     public static final TrapezoidProfile.Constraints kThetaControllerConstraints =

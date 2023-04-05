@@ -20,7 +20,7 @@ public class PPSwerveCommand extends SequentialCommandGroup {
               // Reset odometry for the first path you run during auto
               if (isFirstPath) {
                 drivetrain.resetOdometry(
-                    PathPlanner.loadPath("name", constraints).getInitialHolonomicPose());
+                    PathPlanner.loadPath(name, constraints).getInitialHolonomicPose());
               }
             }),
         new PPSwerveControllerCommand(

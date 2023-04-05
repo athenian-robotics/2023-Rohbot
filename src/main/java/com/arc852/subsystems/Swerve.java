@@ -6,8 +6,6 @@ import com.arc852.Constants;
 import com.arc852.SwerveModule;
 import com.ctre.phoenix.sensors.Pigeon2;
 import edu.wpi.first.math.MathUtil;
-import edu.wpi.first.math.VecBuilder;
-import edu.wpi.first.math.controller.LTVDifferentialDriveController;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.filter.SlewRateLimiter;
@@ -15,26 +13,25 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.*;
-import edu.wpi.first.math.system.plant.LinearSystemId;
 import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.motorcontrol.MotorControllerGroup;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.*;
+import io.github.oblarg.oblog.Loggable;
+import io.github.oblarg.oblog.annotations.Log;
 import java.util.Map;
 import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
 
-public class Swerve extends SubsystemBase {
+public class Swerve extends SubsystemBase implements Loggable {
   public SwerveDriveOdometry swerveOdometry;
-  public SwerveModule[] mSwerveMods;
+  public SwerveModule[] swerveModules;
   public Pigeon2 gyro;
-  private final DifferentialDrive drive;
   private final PIDController pid;
   private final double kP = 0.018;
   private final double kI = 0;
@@ -47,8 +44,6 @@ public class Swerve extends SubsystemBase {
       new ProfiledPIDController(
           Constants.Auto.kPThetaController, 0, 0, Constants.Auto.kThetaControllerConstraints);
 
-  private final LTVDifferentialDriveController controller;
-
   public Swerve() {
     thetaController.enableContinuousInput(-Math.PI, Math.PI);
 
@@ -56,7 +51,7 @@ public class Swerve extends SubsystemBase {
     gyro.configFactoryDefault();
     zeroGyro();
 
-    mSwerveMods =
+    swerveModules =
         new SwerveModule[] {
           new SwerveModule(0, Constants.Swerve.Mod0.constants, "can"),
           new SwerveModule(1, Constants.Swerve.Mod1.constants, "can"),
@@ -65,16 +60,17 @@ public class Swerve extends SubsystemBase {
         };
 
     MotorControllerGroup left =
-        new MotorControllerGroup(mSwerveMods[0].getDriveMotor(), mSwerveMods[2].getDriveMotor());
+        new MotorControllerGroup(
+            swerveModules[0].getDriveMotor(), swerveModules[2].getDriveMotor());
     MotorControllerGroup right =
-        new MotorControllerGroup(mSwerveMods[1].getDriveMotor(), mSwerveMods[3].getDriveMotor());
+        new MotorControllerGroup(
+            swerveModules[1].getDriveMotor(), swerveModules[3].getDriveMotor());
 
-    mSwerveMods[0].getAngleMotor().setNeutralMode(Brake);
-    mSwerveMods[1].getAngleMotor().setNeutralMode(Brake);
-    mSwerveMods[2].getAngleMotor().setNeutralMode(Brake);
-    mSwerveMods[3].getAngleMotor().setNeutralMode(Brake);
+    swerveModules[0].getAngleMotor().setNeutralMode(Brake);
+    swerveModules[1].getAngleMotor().setNeutralMode(Brake);
+    swerveModules[2].getAngleMotor().setNeutralMode(Brake);
+    swerveModules[3].getAngleMotor().setNeutralMode(Brake);
 
-    drive = new DifferentialDrive(left, right);
     this.pid = new PIDController(kP, kI, kD);
     ShuffleboardTab tab = Shuffleboard.getTab("Swerve");
     tab.add("PID", pid);
@@ -97,19 +93,6 @@ public class Swerve extends SubsystemBase {
             .withProperties(Map.of("min", -180, "max", 180))
             .getEntry();
 
-    controller =
-        new LTVDifferentialDriveController(
-            LinearSystemId.identifyDrivetrainSystem(
-                Constants.kv,
-                Constants.ka,
-                Constants.kvRot,
-                Constants.kaRot,
-                Constants.trackWidthMeters),
-            Constants.trackWidthMeters,
-            VecBuilder.fill(1.0, 1.0, 1.0, 1.0, 1.0),
-            VecBuilder.fill(9.0, 9.0),
-            0.2);
-
     /* By pausing init for a second before setting module offsets, we avoid a bug with inverting motors.
      * See https://github.com/Team364/BaseFalconSwerve/issues/8 for more info.
      */
@@ -131,7 +114,7 @@ public class Swerve extends SubsystemBase {
 
     SwerveDriveKinematics.desaturateWheelSpeeds(swerveModuleStates, Constants.Swerve.maxSpeed);
 
-    for (SwerveModule mod : mSwerveMods) {
+    for (SwerveModule mod : swerveModules) {
       mod.setDesiredState(swerveModuleStates[mod.moduleNumber], isOpenLoop);
     }
   }
@@ -140,7 +123,7 @@ public class Swerve extends SubsystemBase {
   public void setModuleStates(SwerveModuleState[] desiredStates) {
     SwerveDriveKinematics.desaturateWheelSpeeds(desiredStates, Constants.Swerve.maxSpeed);
 
-    for (SwerveModule mod : mSwerveMods) {
+    for (SwerveModule mod : swerveModules) {
       mod.setDesiredState(desiredStates[mod.moduleNumber], false);
     }
   }
@@ -155,7 +138,7 @@ public class Swerve extends SubsystemBase {
 
   public SwerveModuleState[] getModuleStates() {
     SwerveModuleState[] states = new SwerveModuleState[4];
-    for (SwerveModule mod : mSwerveMods) {
+    for (SwerveModule mod : swerveModules) {
       states[mod.moduleNumber] = mod.getState();
     }
     return states;
@@ -163,7 +146,7 @@ public class Swerve extends SubsystemBase {
 
   public SwerveModulePosition[] getModulePositions() {
     SwerveModulePosition[] positions = new SwerveModulePosition[4];
-    for (SwerveModule mod : mSwerveMods) {
+    for (SwerveModule mod : swerveModules) {
       positions[mod.moduleNumber] = mod.getPosition();
     }
     return positions;
@@ -179,14 +162,15 @@ public class Swerve extends SubsystemBase {
         : Rotation2d.fromDegrees(gyro.getYaw());
   }
 
-  public void resetModulesToAbsolute() {
-    for (SwerveModule mod : mSwerveMods) {
-      mod.resetToAbsolute();
-    }
+  @Log
+  public double getYawDegrees() {
+    return getYaw().getDegrees();
   }
 
-  public void tankDrive(double leftPower, double rightPower) {
-    drive.tankDrive(leftPower, rightPower);
+  public void resetModulesToAbsolute() {
+    for (SwerveModule mod : swerveModules) {
+      mod.resetToAbsolute();
+    }
   }
 
   public Command autoBalance() {
@@ -294,10 +278,19 @@ public class Swerve extends SubsystemBase {
                 }));
   }
 
+  public Command lockWheels() {
+    return new InstantCommand(
+            () -> {
+              for (SwerveModule mods : swerveModules) {
+                mods.setDesiredState(new SwerveModuleState(0, new Rotation2d(Math.PI / 4)), true);
+              }
+            })
+        .alongWith(new WaitCommand(3.5));
+  }
+
   @Override
   public void periodic() {
     swerveOdometry.update(getYaw(), getModulePositions());
-    drive.feed();
 
     SmartDashboard.putNumber("Pitch", gyro.getPitch());
     SmartDashboard.putNumber("rot", getPose().getRotation().getDegrees());
@@ -306,7 +299,7 @@ public class Swerve extends SubsystemBase {
     pEffect.setDouble(kP * pid.getPositionError());
     dEffect.setDouble(kD * pid.getVelocityError());
 
-    for (SwerveModule mod : mSwerveMods) {
+    for (SwerveModule mod : swerveModules) {
       SmartDashboard.putNumber(
           "Mod " + mod.moduleNumber + " Cancoder", mod.getCanCoder().getDegrees());
       SmartDashboard.putNumber(

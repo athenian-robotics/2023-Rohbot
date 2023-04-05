@@ -1,6 +1,7 @@
 package com.arc852;
 
 import static com.lib.controllers.FightStick.Button.*;
+import static com.lib.controllers.Thrustmaster.Button.*;
 
 import com.arc852.autos.*;
 import com.arc852.subsystems.*;
@@ -10,10 +11,10 @@ import com.pathplanner.lib.PathConstraints;
 import edu.wpi.first.networktables.DoubleSubscriber;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.GenericHID;
-import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.event.EventLoop;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
@@ -35,6 +36,7 @@ public class RobotContainer implements Loggable {
   private final int leftY = XboxController.Axis.kLeftY.value;
   private final int leftX = XboxController.Axis.kLeftX.value;
   private final int rightX = XboxController.Axis.kRightX.value;
+
   private final DoubleSubscriber dial =
       NetworkTableInstance.getDefault().getDoubleTopic("phidget/dial").subscribe(0.0);
   private final DoubleSubscriber slider =
@@ -49,8 +51,12 @@ public class RobotContainer implements Loggable {
   private static final JoystickButton b = new JoystickButton(fight, B.value);
   private static final JoystickButton x = new JoystickButton(fight, X.value);
   private static final JoystickButton y = new JoystickButton(fight, Y.value);
-  private static final JoystickButton bot =
-      new JoystickButton(stick, Joystick.ButtonType.kTop.value);
+  private static final JoystickButton lb = new JoystickButton(fight, FightStick.Button.LB.value);
+  private static final JoystickButton trigger = new JoystickButton(stick, TRIGGER.val);
+  private static final JoystickButton bottom = new JoystickButton(stick, BOTTOM.val);
+  private static final JoystickButton l3 = new JoystickButton(stick, LEFT_INSIDE_BOTTOM.val);
+
+
   /* Subsystems */
   private final Swerve swerve = new Swerve();
   private final Elevator elevator = new Elevator();
@@ -62,10 +68,15 @@ public class RobotContainer implements Loggable {
     autoChooser.addOption("left", "left corner");
     autoChooser.addOption("mid", "middle");
     autoChooser.addOption("right", "right corner");
+    autoChooser.addOption("left no balance", "left corner no balance");
+    autoChooser.addOption("right no balance", "right corner no balance");
     autoChooser.setDefaultOption("mid", "middle");
+    autoChooser.addOption("do nothing", "nothing");
+    autoChooser.addOption("back", "drop game piece");
 
+    SmartDashboard.putData(autoChooser);
     swerve.setDefaultCommand(
-        swerve.drive(() -> -stick.getX(), () -> -stick.getY(), () -> -stick.getZ(), () -> false));
+        swerve.drive(() -> -stick.getY(), () -> -stick.getX(), () -> -stick.getZ(), () -> false));
 
     //    elevator.setDefaultCommand(
     //        new InstantCommand(() -> elevator.set(slider.get()), elevator).repeatedly());
@@ -118,11 +129,16 @@ public class RobotContainer implements Loggable {
     //    new BooleanEvent(loop, fight::getAButton).ifHigh(grabber::open);
     //    //    new BooleanEvent(loop, fight::getBButton).ifHigh(grabber::close);
 
-    a.onTrue(grabber.open());
-    b.onTrue(grabber.close());
+    a.onTrue(grabber.close());
+    b.onTrue(grabber.open());
     x.whileTrue(grabber.spinForward());
     y.whileTrue(grabber.spinBackward());
-    bot.onTrue(new InstantCommand(swerve::zeroGyro));
+    lb.onTrue(new InstantCommand(swerve::zeroGyro));
+    trigger.onTrue(grabber.close());
+    bottom.onTrue(grabber.open());
+    l3.onTrue(swerve.lockWheels());
+
+
     //    a.onTrue(
     //        new InstantCommand(
     //            () -> {
@@ -146,6 +162,13 @@ public class RobotContainer implements Loggable {
    */
   public Command getAutonomousCommand() {
     // An ExampleCommand will run in autonomousz
+    if (autoChooser.getSelected().equals("nothing")) return new InstantCommand();
+
+    if (autoChooser.getSelected().equals("drop game piece")) {
+      return new PPSwerveCommand(
+          swerve, true, autoChooser.getSelected(), new PathConstraints(2.0, 1.5));
+    }
+
     return new PPSwerveCommand(
             swerve, true, autoChooser.getSelected(), new PathConstraints(1.5, 1.0))
         .andThen(swerve.autoBalance());

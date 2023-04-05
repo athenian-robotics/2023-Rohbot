@@ -54,9 +54,10 @@ public class Elevator extends SubsystemBase implements Loggable {
     LinearQuadraticRegulator<N2, N1, N1> controller =
         new LinearQuadraticRegulator<>(
             sys,
-            VecBuilder.fill(0.1, 0.1),
-            VecBuilder.fill(12),
+            VecBuilder.fill(0.1, 0.095),
+            VecBuilder.fill(8),
             0.02); // error tolerance for pos, velo and then control effort
+
     loop = new LinearSystemLoop<>(sys, controller, filter, 12, 0.02);
   }
 
