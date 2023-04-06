@@ -31,7 +31,7 @@ public class Elevator extends SubsystemBase implements Loggable {
   private final LinearSystemLoop<N2, N1, N1> loop;
   private final WPI_TalonFX leftMotor;
   @Log private double pos = 0;
-  private final SlewRateLimiter limiter = new SlewRateLimiter(2.8); // m/s
+  private final SlewRateLimiter limiter = new SlewRateLimiter(3.85); // m/s
 
   public Elevator() {
     leftMotor = new WPI_TalonFX(LEFT_MOTOR);
@@ -58,7 +58,7 @@ public class Elevator extends SubsystemBase implements Loggable {
     LinearQuadraticRegulator<N2, N1, N1> controller =
         new LinearQuadraticRegulator<>(
             sys,
-            VecBuilder.fill(0.1, 0.1),
+            VecBuilder.fill(0.035, 0.11),
             VecBuilder.fill(8),
             0.02); // error tolerance for pos, velo and then control effort
 
@@ -78,7 +78,12 @@ public class Elevator extends SubsystemBase implements Loggable {
 
   @Log
   public boolean atSetpoint() {
-    return Math.abs(pos - leftMotor.getSelectedSensorPosition() * TICKS_TO_METERS) < 0.15;
+    return err() - .16 < 0.15;
+  }
+
+  @Log
+  public double err() {
+    return Math.abs(pos - leftMotor.getSelectedSensorPosition() * TICKS_TO_METERS);
   }
 
   @Log

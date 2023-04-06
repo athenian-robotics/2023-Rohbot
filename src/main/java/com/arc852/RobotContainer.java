@@ -61,6 +61,7 @@ public class RobotContainer implements Loggable {
   private final Elevator elevator = new Elevator();
   private final Arm arm = new Arm();
   private final Grabber grabber = new Grabber();
+  private final Superstructure superstructure = new Superstructure(arm, elevator);
 
   /* The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer(EventLoop loop) {
@@ -120,8 +121,9 @@ public class RobotContainer implements Loggable {
     lb.onTrue(new InstantCommand(swerve::zeroGyro));
     trigger.onTrue(grabber.close());
     bottom.onTrue(grabber.open());
-    l3.onTrue(swerve.lockWheels());
 
+    l3.onTrue(swerve.lockWheels());
+    lb.onTrue(superstructure.startingPos());
     arm.setDefaultCommand(arm.set(() -> (1 - slider2.get()) * -Math.PI));
     elevator.setDefaultCommand(elevator.set(slider));
   }

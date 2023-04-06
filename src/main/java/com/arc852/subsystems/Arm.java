@@ -37,12 +37,12 @@ public class Arm extends SubsystemBase implements Loggable {
             Nat.N2(),
             Nat.N1(),
             sys,
-            VecBuilder.fill(0.04, 0.04),
+            VecBuilder.fill(0.02, 0.02),
             VecBuilder.fill(TICKS_TO_RAD),
             0.02);
     LinearQuadraticRegulator<N2, N1, N1> controller =
         new LinearQuadraticRegulator<>(
-            sys, VecBuilder.fill(0.005, 0.015), VecBuilder.fill(30), 0.02);
+            sys, VecBuilder.fill(0.0025, 0.02), VecBuilder.fill(12), 0.02);
     loop = new LinearSystemLoop<>(sys, controller, filter, 12, 0.02);
   }
 
@@ -63,7 +63,12 @@ public class Arm extends SubsystemBase implements Loggable {
 
   @Log
   public boolean atSetpoint() {
-    return Math.abs(pos() - pos) < 0.01;
+    return err() < 0.05;
+  }
+
+  @Log
+  public double err() {
+    return Math.abs(pos() - pos);
   }
 
   @Log
