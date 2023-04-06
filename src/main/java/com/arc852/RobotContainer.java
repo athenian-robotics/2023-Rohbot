@@ -124,8 +124,8 @@ public class RobotContainer implements Loggable {
 
     l3.onTrue(swerve.lockWheels());
     lb.onTrue(superstructure.startingPos());
-    arm.setDefaultCommand(arm.set(() -> (1 - slider2.get()) * -Math.PI));
-    elevator.setDefaultCommand(elevator.set(slider));
+//    arm.setDefaultCommand(arm.set((1 - slider2.get()) * -Math.PI).repeatedly());
+//    elevator.setDefaultCommand(elevator.set(slider.get()).repeatedly());
   }
 
   @Log

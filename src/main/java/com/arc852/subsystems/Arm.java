@@ -14,7 +14,6 @@ import edu.wpi.first.math.system.plant.LinearSystemId;
 import edu.wpi.first.wpilibj2.command.*;
 import io.github.oblarg.oblog.Loggable;
 import io.github.oblarg.oblog.annotations.Log;
-import java.util.function.DoubleSupplier;
 
 public class Arm extends SubsystemBase implements Loggable {
   private final LinearSystemLoop<N2, N1, N1> loop;
@@ -52,12 +51,9 @@ public class Arm extends SubsystemBase implements Loggable {
    * @param radians angle to set the arm to
    * @return command that does the thing
    */
-  public Command set(DoubleSupplier radians) {
-    return new RunCommand(
-        () ->
-            pos =
-                MathUtil.clamp(
-                    radians.getAsDouble(), Constants.Arm.MIN_ANGLE, Constants.Arm.MAX_ANGLE),
+  public Command set(double radians) {
+    return new InstantCommand(
+        () -> pos = MathUtil.clamp(radians, Constants.Arm.MIN_ANGLE, Constants.Arm.MAX_ANGLE),
         this);
   }
 

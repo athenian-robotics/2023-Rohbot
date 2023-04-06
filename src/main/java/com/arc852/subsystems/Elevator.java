@@ -18,11 +18,10 @@ import edu.wpi.first.wpilibj.motorcontrol.MotorControllerGroup;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.RunCommand;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import io.github.oblarg.oblog.Loggable;
 import io.github.oblarg.oblog.annotations.Log;
-import java.util.function.DoubleSupplier;
 
 public class Elevator extends SubsystemBase implements Loggable {
   private final MotorControllerGroup elevatorMotors;
@@ -71,9 +70,8 @@ public class Elevator extends SubsystemBase implements Loggable {
    * @param percent 0-1
    * @return Command
    */
-  public Command set(DoubleSupplier percent) {
-    return new RunCommand(
-        () -> pos = percent.getAsDouble() * (MAX_HEIGHT - MIN_HEIGHT) + MIN_HEIGHT, this);
+  public Command set(double percent) {
+    return new InstantCommand(() -> pos = percent * (MAX_HEIGHT - MIN_HEIGHT) + MIN_HEIGHT, this);
   }
 
   @Log
@@ -88,7 +86,8 @@ public class Elevator extends SubsystemBase implements Loggable {
 
   @Log
   public double positionPercent() {
-    return leftMotor.getSelectedSensorPosition() * TICKS_TO_METERS / MAX_HEIGHT;
+    return (leftMotor.getSelectedSensorPosition() * TICKS_TO_METERS - MIN_HEIGHT)
+        / (MAX_HEIGHT - MIN_HEIGHT);
   }
 
   @Override
