@@ -57,7 +57,7 @@ public class Elevator extends SubsystemBase implements Loggable {
     LinearQuadraticRegulator<N2, N1, N1> controller =
         new LinearQuadraticRegulator<>(
             sys,
-            VecBuilder.fill(0.035, 0.11),
+            VecBuilder.fill(0.025, 0.11),
             VecBuilder.fill(8),
             0.02); // error tolerance for pos, velo and then control effort
 
@@ -76,12 +76,13 @@ public class Elevator extends SubsystemBase implements Loggable {
 
   @Log
   public boolean atSetpoint() {
-    return err() - .16 < 0.15;
+    return err() < 0.1;
   }
 
   @Log
   public double err() {
-    return Math.abs(pos - leftMotor.getSelectedSensorPosition() * TICKS_TO_METERS);
+    return Math.abs(
+        ((pos - MIN_HEIGHT) / (MAX_HEIGHT - MIN_HEIGHT) + MIN_HEIGHT) - positionPercent());
   }
 
   @Log

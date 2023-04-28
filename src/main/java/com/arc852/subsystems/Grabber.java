@@ -44,10 +44,10 @@ public class Grabber extends SubsystemBase {
   }
 
   public Command spinForward() {
-    return new StartEndCommand(() -> motor.set(.1), () -> motor.set(0), this);
+    return new StartEndCommand(() -> motor.set(.2), () -> motor.set(0), this);
   }
 
   public Command spinBackward() {
-    return new StartEndCommand(() -> motor.set(-.1), () -> motor.set(0), this);
+    return new StartEndCommand(() -> motor.set(-.2), () -> motor.set(0), this);
   }
 }

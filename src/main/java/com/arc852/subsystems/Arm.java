@@ -1,6 +1,7 @@
 package com.arc852.subsystems;
 
 import com.arc852.Constants;
+import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.Nat;
@@ -28,6 +29,7 @@ public class Arm extends SubsystemBase implements Loggable {
   public Arm() {
     bottomMotor = new WPI_TalonFX(Constants.Arm.LEFT_MOTOR);
     bottomMotor.setInverted(true);
+    bottomMotor.setNeutralMode(NeutralMode.Brake);
 
     var sys = LinearSystemId.identifyPositionSystem(Constants.Arm.kV, Constants.Arm.kA);
 
@@ -41,7 +43,7 @@ public class Arm extends SubsystemBase implements Loggable {
             0.02);
     LinearQuadraticRegulator<N2, N1, N1> controller =
         new LinearQuadraticRegulator<>(
-            sys, VecBuilder.fill(0.0025, 0.02), VecBuilder.fill(12), 0.02);
+            sys, VecBuilder.fill(0.0015, 0.02), VecBuilder.fill(12), 0.02);
     loop = new LinearSystemLoop<>(sys, controller, filter, 12, 0.02);
   }
 
@@ -59,7 +61,7 @@ public class Arm extends SubsystemBase implements Loggable {
 
   @Log
   public boolean atSetpoint() {
-    return err() < 0.05;
+    return err() < 0.025;
   }
 
   @Log

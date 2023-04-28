@@ -3,8 +3,11 @@ package com.arc852;
 import static com.lib.controllers.FightStick.Button.*;
 import static com.lib.controllers.Thrustmaster.Button.*;
 
-import com.arc852.autos.*;
-import com.arc852.subsystems.*;
+import com.arc852.autos.PPSwerveCommand;
+import com.arc852.subsystems.Arm;
+import com.arc852.subsystems.Elevator;
+import com.arc852.subsystems.Grabber;
+import com.arc852.subsystems.Swerve;
 import com.lib.controllers.FightStick;
 import com.lib.controllers.Thrustmaster;
 import com.pathplanner.lib.PathConstraints;
@@ -17,7 +20,10 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import io.github.oblarg.oblog.Loggable;
 import io.github.oblarg.oblog.annotations.Log;
 
@@ -52,9 +58,32 @@ public class RobotContainer implements Loggable {
   private static final JoystickButton x = new JoystickButton(fight, X.value);
   private static final JoystickButton y = new JoystickButton(fight, Y.value);
   private static final JoystickButton lb = new JoystickButton(fight, FightStick.Button.LB.value);
+  private static final JoystickButton rb = new JoystickButton(fight, FightStick.Button.RB.value);
+  private static final JoystickButton lt = new JoystickButton(fight, FightStick.Button.LT.value);
+  private static final JoystickButton rt = new JoystickButton(fight, FightStick.Button.RT.value);
   private static final JoystickButton trigger = new JoystickButton(stick, TRIGGER.val);
   private static final JoystickButton bottom = new JoystickButton(stick, BOTTOM.val);
-  private static final JoystickButton l3 = new JoystickButton(stick, LEFT_INSIDE_BOTTOM.val);
+  private static final JoystickButton leftOutsideTop =
+      new JoystickButton(stick, LEFT_OUTSIDE_TOP.val);
+  private static final JoystickButton leftOutsideBottom =
+      new JoystickButton(stick, LEFT_OUTSIDE_BOTTOM.val);
+  private static final JoystickButton leftInsideBottom =
+      new JoystickButton(stick, LEFT_INSIDE_BOTTOM.val);
+
+  // just in case flight stick controls
+
+  private static final JoystickButton rightOutsideTop =
+      new JoystickButton(stick, RIGHT_OUTSIDE_TOP.val);
+  private static final JoystickButton rightOutsideBottom =
+      new JoystickButton(stick, RIGHT_OUTSIDE_BOTTOM.val);
+  private static final JoystickButton rightInsideBottom =
+      new JoystickButton(stick, RIGHT_INSIDE_BOTTOM.val);
+  private static final JoystickButton rightInsideTop =
+      new JoystickButton(stick, RIGHT_INSIDE_TOP.val);
+  private static final JoystickButton rightMiddleBottom =
+      new JoystickButton(stick, RIGHT_MIDDLE_BOTTOM.val);
+  private static final JoystickButton rightMiddleTop =
+      new JoystickButton(stick, RIGHT_MIDDLE_TOP.val);
 
   /* Subsystems */
   private final Swerve swerve = new Swerve();
@@ -62,9 +91,14 @@ public class RobotContainer implements Loggable {
   private final Arm arm = new Arm();
   private final Grabber grabber = new Grabber();
   private final Superstructure superstructure = new Superstructure(arm, elevator);
+  private final EventLoop loop;
 
   /* The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer(EventLoop loop) {
+    this.loop = loop;
+    autoChooser.addOption("dump and balance", "dump and balance");
+    autoChooser.addOption("dump and leave community", "dump and leave community");
+    autoChooser.addOption("mobility dump and balance", "mobility dump and balance");
     autoChooser.addOption("left", "left corner");
     autoChooser.addOption("mid", "middle");
     autoChooser.addOption("right", "right corner");
@@ -73,7 +107,9 @@ public class RobotContainer implements Loggable {
     autoChooser.setDefaultOption("mid", "middle");
     autoChooser.addOption("do nothing", "nothing");
     autoChooser.addOption("back", "drop game piece");
-
+    autoChooser.addOption("place high cone and balance", "place high cone and balance");
+    autoChooser.addOption("place high cube", "place high cube");
+    arm.set(0);
     SmartDashboard.putData(autoChooser);
     swerve.setDefaultCommand(
         swerve.drive(() -> -stick.getY(), () -> -stick.getX(), () -> -stick.getZ(), () -> false));
@@ -114,25 +150,45 @@ public class RobotContainer implements Loggable {
   private void configureButtonBindings() {
     /* Driver Buttons */
 
-    a.onTrue(grabber.close());
-    b.onTrue(grabber.open());
-    x.whileTrue(grabber.spinForward());
-    y.whileTrue(grabber.spinBackward());
-    lb.onTrue(new InstantCommand(swerve::zeroGyro));
+    a.onTrue(superstructure.highCube());
+    b.onTrue(superstructure.midCube());
+    x.onTrue(superstructure.highCone());
+    y.onTrue(superstructure.midCone());
+    lb.onTrue(superstructure.startingPos());
+    rb.onTrue(superstructure.low());
+    // lb.onTrue(new InstantCommand(swerve::zeroGyro));
     trigger.onTrue(grabber.close());
     bottom.onTrue(grabber.open());
+    leftOutsideTop.onTrue(swerve.autoBalance());
+    // leftOutsideBottom.onTrue(
+    //    new PPSwerveCommand(swerve, true, "chargestation", new PathConstraints(1.3, 1.5)));
+    leftInsideBottom.onTrue(new InstantCommand((swerve::zeroGyro)));
 
-    l3.onTrue(swerve.lockWheels());
-    lb.onTrue(superstructure.startingPos());
-//    arm.setDefaultCommand(arm.set((1 - slider2.get()) * -Math.PI).repeatedly());
-//    elevator.setDefaultCommand(elevator.set(slider.get()).repeatedly());
+    /**
+     * // just in case controls on flight stick rightOutsideTop.onTrue(superstructure.highCone());
+     * rightOutsideBottom.onTrue(superstructure.midCone());
+     * rightMiddleTop.onTrue(superstructure.doubleSubstation());
+     * rightMiddleBottom.onTrue(superstructure.low());
+     * rightInsideTop.onTrue(superstructure.ground());
+     * rightInsideBottom.onTrue(superstructure.startingPos());
+     */
+    fight.povLeft(loop).castTo(Trigger::new).onTrue(superstructure.doubleSubstation());
+    fight.povRight(loop).castTo(Trigger::new).onTrue(superstructure.ground());
+    fight.povUp(loop).castTo(Trigger::new).whileTrue(grabber.spinForward());
+    fight.povDown(loop).castTo(Trigger::new).whileTrue(grabber.spinBackward());
+
+    //    lb.onTrue(superstructure.startingPos());
+    // arm.setDefaultCommand(arm.set((1 - slider2.get()) * -Math.PI).repeatedly());
+    // elevator.setDefaultCommand(elevator.set(slider.get()).repeatedly());
+
   }
 
   @Log
   public double gert() {
     return slider2.get();
   }
-  /**
+
+  /*
    * Use this to pass the autonomous command to the main {@link Robot} class.
    *
    * @return the command to run in autonomous
@@ -144,6 +200,44 @@ public class RobotContainer implements Loggable {
     if (autoChooser.getSelected().equals("drop game piece")) {
       return new PPSwerveCommand(
           swerve, true, autoChooser.getSelected(), new PathConstraints(2.0, 1.5));
+    }
+
+    if (autoChooser.getSelected().equals("place high cone and balance")) {
+      return new SequentialCommandGroup(
+          superstructure.highCone(),
+          new PPSwerveCommand(swerve, true, "run into terminal", new PathConstraints(2, 1.5)),
+          new WaitCommand(1),
+          grabber.open(),
+          new WaitCommand(0.75),
+          superstructure.startingPos(),
+          new WaitCommand(0.75),
+          new PPSwerveCommand(
+              swerve, true, "chargestation backwards", new PathConstraints(1.3, 1.5)));
+    }
+
+    if (autoChooser.getSelected().equals("mobility dump and balance")) {
+      return new SequentialCommandGroup(
+          new PPSwerveCommand(swerve, true, "drop game piece", new PathConstraints(2, 1.5)),
+          new PPSwerveCommand(
+              swerve, true, "chargestation forwards", new PathConstraints(1.3, 1.5)),
+          new PPSwerveCommand(swerve, true, "mobility forwards", new PathConstraints(1.3, 0.7)),
+          new WaitCommand(0.3),
+          new PPSwerveCommand(swerve, false, "mobility backwards", new PathConstraints(1.3, 1.5)),
+          swerve.autoBalance());
+    }
+
+    if (autoChooser.getSelected().equals("dump and balance")) {
+      return new SequentialCommandGroup(
+          new PPSwerveCommand(swerve, true, "drop game piece", new PathConstraints(2, 1.5)),
+          new PPSwerveCommand(
+              swerve, true, "chargestation forwards", new PathConstraints(1.3, 1.5)),
+          swerve.autoBalance());
+    }
+
+    if (autoChooser.getSelected().equals("dump and leave community")) {
+      return new SequentialCommandGroup(
+          new PPSwerveCommand(swerve, true, "drop game piece", new PathConstraints(2, 1.5)),
+          new PPSwerveCommand(swerve, true, "leave community", new PathConstraints(1.5, 1.5)));
     }
 
     return new PPSwerveCommand(

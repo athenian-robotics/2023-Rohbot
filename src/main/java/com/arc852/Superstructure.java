@@ -3,15 +3,15 @@ package com.arc852;
 import com.arc852.subsystems.Arm;
 import com.arc852.subsystems.Elevator;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
+import io.github.oblarg.oblog.Loggable;
+import io.github.oblarg.oblog.annotations.Log;
 
-public class Superstructure {
+public class Superstructure implements Loggable {
   private final Arm arm;
   //  private final Led led;
   private final Elevator elevator;
-
 
   public Superstructure(Arm arm, Elevator elevator) {
     this.arm = arm;
@@ -19,80 +19,27 @@ public class Superstructure {
     this.elevator = elevator;
   }
 
-  private record Position(double arm, double elevator) {}
+  private record Position(double arm, double elevator) {
 
-  private Position starting = new Position(0,0);
+    public boolean equals(Position pos) {
+      return this.arm() == pos.arm() && this.elevator() == pos.elevator();
+    }
+  }
 
-    private Position highCube = new Position(-1.823377330, 0.9568971962588786);
-    private Position highCone = new Position(-1.459210181, 0.9218878504588784);
-    private Position midCube = new Position(-0.12272477, 0.36684112149532616);
-    private Position midCone = new Position(-0.807741689, 0.4943177570093448);
-    private Position low = new Position(-0.765973583820, 0);
+  private static final Position starting = new Position(0, 0);
 
-    private Position state = starting;
+  private static final Position highCube = new Position(-1.823377330, 0.9568971962588786);
+  private static final Position highCone =
+      new Position(-1.459210181, 0.9718878504588784); // (-1.459210181, 0.9218878504588784)
+  private static final Position midCube = new Position(-0.959211335, 0.36684112149532616);
+  private static final Position midCone = new Position(-0.807741689, 0.4943177570093448);
+  private static final Position low = new Position(-0.765973583820, 0);
+  private static final Position doubleSubstation =
+      new Position(-1.510776248, 0.7556915887850468); // (-1.610776248, 0.7156915887850468)
+  private static final Position ground =
+      new Position(-2.8823904069420, 0.462803738317757); // -3.1423904069420, 0.562803738317757)
 
-
-//  private static final class Positions {
-//    private static final class Starting extends Position {
-//      public static final double ARM = 0;
-//      public static final double ELEVATOR = 0;
-//
-//      @Override
-//      public double height() {
-//        return ELEVATOR;
-//      }
-//    }
-//
-//    private static final class HighCube extends Position {
-//      public static final double ARM = -1.823377330;
-//      public static final double ELEVATOR = 0.9568971962588786;
-//
-//      @Override
-//      public double height() {
-//        return ELEVATOR;
-//      }
-//    }
-//
-//    private static final class HighCone extends Position {
-//      public static final double ARM = -1.459210181;
-//      public static final double ELEVATOR = 0.9218878504588784;
-//
-//      @Override
-//      public double height() {
-//        return ELEVATOR;
-//      }
-//    }
-//
-//    private static final class MidCone extends Position {
-//      public static final double ARM = -0.807741689;
-//      public static final double ELEVATOR = 0.4943177570093448;
-//
-//      @Override
-//      public double height() {
-//        return ELEVATOR;
-//      }
-//    }
-//
-//    private static final class Low extends Position {
-//      public static final double ARM = -0.765973583820;
-//      public static final double ELEVATOR = 0;
-//
-//      @Override
-//      public double height() {
-//        return ELEVATOR;
-//      }
-//    }
-//
-//    private static final class MidCube extends Position {
-//      public static final double ARM = -0.012272477;
-//      public static final double ELEVATOR = 0.36684112149532616;
-//
-//      @Override
-//      public double height() {
-//        return ELEVATOR;
-//      }
-//    }
-//  }
+  @Log.ToString private Position state = starting;
 
   /**
    * set the whole manipulator to a position
@@ -101,48 +48,67 @@ public class Superstructure {
    *
    * @return command
    */
-  private Command setPos(double arm, double elevator) {
-    boolean armFirst = state.elevator() > elevator;
+  private Command setPos(Position pos) {
+    boolean armFirst = state.elevator() > pos.elevator();
+    double arm = pos.arm();
+    double elevator = pos.elevator();
+
+    if (state.equals(ground)) armFirst = true;
+    if (state.equals(starting)) armFirst = false;
+    if (state.equals(low)) armFirst = false;
+    state = pos;
+
+    //    System.out.println("state: " + state + "\n pos: " + pos + "\n armFirst" + armFirst);
+    //    if (state.equals(low)) {
+    //      System.out.println("state: " + state + "\n pos: " + pos + "\n armFirst" + armFirst);
+    //      return new InstantCommand();
+    //    }
 
     return armFirst
-        ? new ParallelCommandGroup(
-                this.arm.set(arm),
-                new WaitUntilCommand(this.arm::atSetpoint).andThen(new WaitCommand(0.75)))
-            .andThen(this.elevator.set(elevator).until(this.elevator::atSetpoint))
-        : new ParallelCommandGroup(
+        ? this.arm
+            .set(arm)
+            .andThen(
+                new WaitCommand(0.5),
                 this.elevator.set(elevator),
-                new WaitUntilCommand(this.elevator::atSetpoint).andThen(new WaitCommand(.75)))
-            .andThen(this.arm.set(arm))
-            .until(this.arm::atSetpoint);
+                new WaitUntilCommand(() -> this.arm.atSetpoint() && this.elevator.atSetpoint()))
+        : this.elevator
+            .set(elevator)
+            .andThen(
+                new WaitCommand(0.5),
+                this.arm.set(arm),
+                new WaitUntilCommand(() -> this.arm.atSetpoint() && this.elevator.atSetpoint()));
   }
 
   public Command startingPos() {
-    state = starting;
-    return setPos(starting.arm(), starting.elevator());
+    return setPos(starting);
   }
 
   public Command highCube() {
-    state = highCube;
-    return setPos(highCube.arm(), highCube.elevator());
+    return setPos(highCube);
   }
 
   public Command highCone() {
     state = highCone;
-    return setPos(highCone.arm(), highCone.elevator());
+    return setPos(highCone);
   }
 
   public Command midCone() {
-    state = midCone;
-    return setPos(midCone.arm(), midCone.elevator());
+    return setPos(midCone);
   }
 
   public Command low() {
-    state = low;
-    return setPos(low.arm(), low.elevator());
+    return setPos(low);
   }
 
   public Command midCube() {
-    state = midCube;
-    return setPos(midCube.arm(), midCube.elevator());
+    return setPos(midCube);
+  }
+
+  public Command doubleSubstation() {
+    return setPos(doubleSubstation);
+  }
+
+  public Command ground() {
+    return setPos(ground);
   }
 }

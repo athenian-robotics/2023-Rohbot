@@ -36,14 +36,6 @@ public class FightStick extends GenericHID {
     return getRawButton(Button.RB.value);
   }
 
-  public boolean getShareButton() {
-    return getRawButton(Button.SHARE.value);
-  }
-
-  public boolean getOptionsButton() {
-    return getRawButton(Button.OPTIONS.value);
-  }
-
   public boolean getL3Button() {
     return getRawButton(Button.L3.value);
   }
@@ -53,16 +45,16 @@ public class FightStick extends GenericHID {
   }
 
   public enum Button {
-    A(1),
-    B(2),
-    X(3),
+    X(3), // Controller Fightstick - 3 | Fightstick - 1
+    A(1), // Controller FightStick - 1 | Fightstick - 2
+    B(2), // Controller Fightstick - 2 | Fightstick - 3
     Y(4),
     LB(5),
     RB(6),
-    SHARE(7),
-    OPTIONS(8),
-    L3(9),
-    R3(10);
+    LT(7),
+    RT(8),
+    L3(11),
+    R3(12);
 
     public final int value;
 
