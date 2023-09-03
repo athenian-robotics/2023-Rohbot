@@ -164,13 +164,13 @@ public class RobotContainer implements Loggable {
     //    new PPSwerveCommand(swerve, true, "chargestation", new PathConstraints(1.3, 1.5)));
     leftInsideBottom.onTrue(new InstantCommand((swerve::zeroGyro)));
 
-    /**
-     * // just in case controls on flight stick rightOutsideTop.onTrue(superstructure.highCone());
-     * rightOutsideBottom.onTrue(superstructure.midCone());
-     * rightMiddleTop.onTrue(superstructure.doubleSubstation());
-     * rightMiddleBottom.onTrue(superstructure.low());
-     * rightInsideTop.onTrue(superstructure.ground());
-     * rightInsideBottom.onTrue(superstructure.startingPos());
+    /*
+      // just in case controls on flight stick rightOutsideTop.onTrue(superstructure.highCone());
+      rightOutsideBottom.onTrue(superstructure.midCone());
+      rightMiddleTop.onTrue(superstructure.doubleSubstation());
+      rightMiddleBottom.onTrue(superstructure.low());
+      rightInsideTop.onTrue(superstructure.ground());
+      rightInsideBottom.onTrue(superstructure.startingPos());
      */
     fight.povLeft(loop).castTo(Trigger::new).onTrue(superstructure.doubleSubstation());
     fight.povRight(loop).castTo(Trigger::new).onTrue(superstructure.ground());

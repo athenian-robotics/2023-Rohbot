@@ -16,8 +16,7 @@ public class PPSwerveCommand extends SequentialCommandGroup {
   public PPSwerveCommand(
       Swerve drivetrain,
       boolean isFirstPath,
-      PathPlannerTrajectory trajectory,
-      PathConstraints constraints) {
+      PathPlannerTrajectory trajectory) {
     super(
         new InstantCommand(
             () -> {

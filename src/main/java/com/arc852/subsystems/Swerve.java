@@ -34,7 +34,6 @@ public class Swerve extends SubsystemBase implements Loggable {
   public final Pigeon2 gyro;
   private final PIDController pid;
   private final double kP = 0.02;
-  private final double kI = 0.001;
   private final double kD = 0;
   private final GenericEntry pitchEntry;
   private final GenericEntry pEffect;
@@ -71,6 +70,7 @@ public class Swerve extends SubsystemBase implements Loggable {
     swerveModules[2].getAngleMotor().setNeutralMode(Brake);
     swerveModules[3].getAngleMotor().setNeutralMode(Brake);
 
+    double kI = 0.001;
     this.pid = new PIDController(kP, kI, kD);
     ShuffleboardTab tab = Shuffleboard.getTab("Swerve");
     tab.add("PID", pid);

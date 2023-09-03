@@ -20,7 +20,6 @@ public class Superstructure implements Loggable {
   }
 
   private record Position(double arm, double elevator) {
-
     public boolean equals(Position pos) {
       return this.arm() == pos.arm() && this.elevator() == pos.elevator();
     }
@@ -44,7 +43,7 @@ public class Superstructure implements Loggable {
   /**
    * set the whole manipulator to a position
    *
-   * <p>arm is rad elev is percent
+   * <p>arm is rad, elev is percent
    *
    * @return command
    */
@@ -57,12 +56,6 @@ public class Superstructure implements Loggable {
     if (state.equals(starting)) armFirst = false;
     if (state.equals(low)) armFirst = false;
     state = pos;
-
-    //    System.out.println("state: " + state + "\n pos: " + pos + "\n armFirst" + armFirst);
-    //    if (state.equals(low)) {
-    //      System.out.println("state: " + state + "\n pos: " + pos + "\n armFirst" + armFirst);
-    //      return new InstantCommand();
-    //    }
 
     return armFirst
         ? this.arm

@@ -1,7 +1,6 @@
 package com.arc852;
 
 import com.ctre.phoenix.motorcontrol.NeutralMode;
-import com.lib.util.COTSFalconSwerveConstants;
 import com.lib.util.SwerveModuleConstants;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -21,13 +20,10 @@ public final class Constants {
     public static final int pigeonID = 13;
     public static final boolean invertGyro = false; // Always ensure Gyro is CCW+ CW-
 
-    public static final COTSFalconSwerveConstants chosenModule =
-        COTSFalconSwerveConstants.SDSMK4(Constants.driveGearRatio);
-
     /* Drivetrain Constants */
     public static final double trackWidth = Units.inchesToMeters(23.75);
     public static final double wheelBase = Units.inchesToMeters(23.75);
-    public static final double wheelCircumference = chosenModule.wheelCircumference;
+    public static final double wheelCircumference = Units.inchesToMeters(4);
 
     /* Swerve Kinematics
      * No need to ever change this unless you are not doing a traditional rectangular/square 4 module swerve */
@@ -39,15 +35,15 @@ public final class Constants {
             new Translation2d(-wheelBase / 2.0, -trackWidth / 2.0));
 
     /* Module Gear Ratios */
-    public static final double driveGearRatio = chosenModule.driveGearRatio;
-    public static final double angleGearRatio = chosenModule.angleGearRatio;
+    public static final double driveGearRatio = Constants.driveGearRatio;
+    public static final double angleGearRatio = 12.8 / 1.0;
 
     /* Motor Inverts */
-    public static final boolean angleMotorInvert = chosenModule.angleMotorInvert;
-    public static final boolean driveMotorInvert = chosenModule.driveMotorInvert;
+    public static final boolean angleMotorInvert = false;
+    public static final boolean driveMotorInvert = false;
 
     /* Angle Encoder Invert */
-    public static final boolean canCoderInvert = chosenModule.canCoderInvert;
+    public static final boolean canCoderInvert = false;
 
     /* Swerve Current Limiting */
     public static final int angleContinuousCurrentLimit = 25;
@@ -66,10 +62,10 @@ public final class Constants {
     public static final double closedLoopRamp = 0.0;
 
     /* Angle Motor PID Values */
-    public static final double angleKP = chosenModule.angleKP;
-    public static final double angleKI = chosenModule.angleKI;
-    public static final double angleKD = chosenModule.angleKD;
-    public static final double angleKF = chosenModule.angleKF;
+    public static final double angleKP = 0.2;
+    public static final double angleKI = 0;
+    public static final double angleKD = 0;
+    public static final double angleKF = 0;
 
     /* Drive Motor PID Values */
     public static final double driveKP = 0.1; // TODO: This must be tuned to specific robot
@@ -179,8 +175,6 @@ public final class Constants {
   public static final
   class Auto { // TODO: The below constants are used in the example auto, and must be tuned
     // to specific robot
-    public static final double MAX_SPEED_METERS_PER_SECOND = 3;
-    public static final double MAX_ACCELERATION_METERS_PER_SECOND_SQUARED = 3;
     public static final double MAX_ANGULAR_SPEED_RADIANS_PER_SECOND = Math.PI;
     public static final double MAX_ANGULAR_SPEED_RADIANS_PER_SECOND_SQUARED = Math.PI;
 
