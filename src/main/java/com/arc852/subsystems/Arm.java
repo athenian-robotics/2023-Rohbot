@@ -54,9 +54,8 @@ public class Arm extends SubsystemBase implements Loggable {
    * @return command that does the thing
    */
   public Command set(double radians) {
-    return new InstantCommand(
-        () -> pos = MathUtil.clamp(radians, Constants.Arm.MIN_ANGLE, Constants.Arm.MAX_ANGLE),
-        this);
+    return runOnce(
+        () -> pos = MathUtil.clamp(radians, Constants.Arm.MIN_ANGLE, Constants.Arm.MAX_ANGLE));
   }
 
   @Log

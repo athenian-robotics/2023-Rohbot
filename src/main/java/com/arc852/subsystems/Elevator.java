@@ -71,7 +71,7 @@ public class Elevator extends SubsystemBase implements Loggable {
    * @return Command
    */
   public Command set(double percent) {
-    return new InstantCommand(() -> pos = percent * (MAX_HEIGHT - MIN_HEIGHT) + MIN_HEIGHT, this);
+    return runOnce(() -> pos = percent * (MAX_HEIGHT - MIN_HEIGHT) + MIN_HEIGHT);
   }
 
   @Log

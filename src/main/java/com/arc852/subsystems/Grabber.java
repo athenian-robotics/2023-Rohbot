@@ -36,7 +36,7 @@ public class Grabber extends SubsystemBase {
   }
 
   public Command close() {
-    return new InstantCommand(
+    return runOnce(
         () -> {
           leftSolenoid.set(true);
           rightSolenoid.set(false);
@@ -44,10 +44,10 @@ public class Grabber extends SubsystemBase {
   }
 
   public Command spinForward() {
-    return new StartEndCommand(() -> motor.set(.2), () -> motor.set(0), this);
+    return startEnd(() -> motor.set(.2), () -> motor.set(0));
   }
 
   public Command spinBackward() {
-    return new StartEndCommand(() -> motor.set(-.2), () -> motor.set(0), this);
+    return startEnd(() -> motor.set(-.2), () -> motor.set(0));
   }
 }

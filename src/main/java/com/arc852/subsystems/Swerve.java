@@ -177,7 +177,7 @@ public class Swerve extends SubsystemBase implements Loggable {
     pid.setSetpoint(0);
     pid.setTolerance(3);
 
-    return new RunCommand(
+    return run(
         () -> {
           double power = pid.calculate(gyro.getPitch());
           double translationVal = MathUtil.applyDeadband(power, Constants.stickDeadband);
@@ -225,7 +225,7 @@ public class Swerve extends SubsystemBase implements Loggable {
     SlewRateLimiter translationLimiter = new SlewRateLimiter(2);
     SlewRateLimiter strafeLimiter = new SlewRateLimiter(2);
 
-    return new RunCommand(
+    return run(
         () -> {
           double translationVal =
               translationLimiter.calculate(
@@ -242,8 +242,7 @@ public class Swerve extends SubsystemBase implements Loggable {
               rotationVal * Constants.Swerve.maxAngularVelocity,
               !robotCentricSup.getAsBoolean(),
               true);
-        },
-        this);
+        });
   }
 
   public Command drive(
@@ -251,14 +250,14 @@ public class Swerve extends SubsystemBase implements Loggable {
     SlewRateLimiter translationLimiter = new SlewRateLimiter(2);
     SlewRateLimiter strafeLimiter = new SlewRateLimiter(2);
 
-    return new InstantCommand(
+    return runOnce(
             () -> {
               thetaController.reset(getPose().getRotation().getRadians());
               thetaController.setGoal(rohtation.get().getRadians());
               thetaController.setTolerance(0.05);
             })
         .andThen(
-            new RunCommand(
+            run(
                 () -> {
                   double translationVal =
                       translationLimiter.calculate(
@@ -279,7 +278,7 @@ public class Swerve extends SubsystemBase implements Loggable {
   }
 
   public Command lockWheels() {
-    return new InstantCommand(
+    return runOnce(
         () -> {
           for (SwerveModule mods : swerveModules) {
             mods.setDesiredState(new SwerveModuleState(0, new Rotation2d(Math.PI)), false);
